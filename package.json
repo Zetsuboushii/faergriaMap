@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "serve": "nodemon --exec ts-node ./src/server.js",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix --ignore-path .gitignore"
+    "lint": "eslint . --fix --ignore-path .gitignore",
+    "start": "concurrently \"npm run serve\" \"npm run dev\""
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
+    "concurrently": "^8.2.2",
     "core-js": "^3.29.0",
     "leaflet": "^1.9.4",
     "roboto-fontface": "*",
@@ -20,6 +23,7 @@
   },
   "devDependencies": {
     "@babel/types": "^7.21.4",
+    "@types/leaflet": "^1.9.12",
     "@types/node": "^18.15.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
