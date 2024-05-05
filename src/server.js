@@ -38,26 +38,14 @@ app.post('/put-marker', (req, res) => {
     values (?, ?, ?, ?);
   `
 
-  const values = []
-
-  db.run(orderInsertSql, values, function (err) {
+  db.run(orderInsertSql, markerData, function (err) {
     if (err) {
       console.error("Fehler beim Einfügen des Markers:", err.message)
       res.status(500).json({error: err.message})
       return
     }
 
-    console.log("Marker erfolgreich eingefügt. ID:", this.lastID)
-
-    db.run("COMMIT", function (err) {
-      if (err) {
-        console.error("Fehler beim Beenden des Vorgangs:", err.message)
-        res.status(500).json({error: err.message})
-        return
-      }
-
-      res.json({message: 'Marker erfolgreich gespeichert'})
-    })
+    res.json({message: 'Marker erfolgreich gespeichert'})
   })
 })
 

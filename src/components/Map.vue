@@ -9,14 +9,17 @@
       :maxBoundsViscosity="maxBoundsViscosity"
       :center="center"
       :zoom="zoom"
+      @click="addMarker"
     >
       <l-image-overlay
         :url="imageUrl"
         :bounds="imageBounds"
       ></l-image-overlay>
-      <l-marker v-for="marker in markers" :lat-lng="[marker.lat, marker.lng]">
-        <l-tooltip>{{ marker.name + ", " + marker.type.region }}</l-tooltip>
-        <l-icon :icon-url="marker.type.url" :icon-size="marker.type.size"></l-icon>
+      <l-marker v-for="marker in markers" :lat-lng="[marker.m_lat, marker.m_lng]">
+        <l-tooltip>{{ marker.m_name }}</l-tooltip>
+        <l-icon
+          :icon-url="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.r_name + '.png'"
+          :icon-size="marker.mt_size"></l-icon>
       </l-marker>
     </l-map>
   </div>
@@ -40,19 +43,18 @@ const imageUrl = 'src/assets/map.png';
 const imageBounds = ref([[0, 0], [689.66, 689.66]]);
 
 interface Marker {
-  name: string
-  type: MarkerType
-  lat: number
-  lng: number
-}
-interface MarkerType {
-  name: string
-  region: string
-  size: number[]
-  url: string
-}
-interface Region {
-  name: string
+  fk_m_type: number;
+  fk_mt_region: string;
+  m_id: number;
+  m_lat: number;
+  m_lng: number;
+  m_name: string;
+  mt_id: number;
+  mt_name: string;
+  mt_size: number;
+  mt_url: string;
+  r_id: string;
+  r_name: string;
 }
 
 const markers = ref<Marker[]>([])
@@ -75,25 +77,62 @@ const fetchMarkers = async () => {
   try {
     const response = await fetch('http://localhost:1337/markers')
     const data = await response.json()
-    markers.value = data.data
+    markers.value = data.data.map((marker: Marker) => ({
+      fk_m_type: marker.fk_m_type,
+      fk_mt_region: marker.fk_mt_region,
+      m_id: marker.m_id,
+      m_lat: marker.m_lat,
+      m_lng: marker.m_lng,
+      m_name: marker.m_name,
+      mt_id: marker.mt_id,
+      mt_name: marker.mt_name,
+      mt_size: marker.mt_size,
+      mt_url: marker.mt_url,
+      r_id: marker.r_id,
+      r_name: marker.r_name
+    }))
+    console.log(markers.value)
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
   }
 }
 
-const putMarkers = async (marker: Marker) => {
-  const markerData = {
+const addMarker = (event) => {
+  const latLng = event.latlng
+  markers.value.push({
+    fk_m_type: 2,
+    fk_mt_region: "",
+    m_id: -1,
+    m_lat: latLng.lat,
+    m_lng: latLng.lng,
+    m_name: "New Marker",
+    mt_id: 2,
+    mt_name: "Dorf",
+    mt_size: 40,
+    mt_url: "poi",
+    r_id: "",
+    r_name: ""
+  })
 
+  putMarker(latLng.lat, latLng.lng)
+}
+
+const putMarker = async (lat: number, lng: number) => {
+  const markerData = {
+    m_name: "New Marker",
+    fk_m_type: 2,
+    m_lat: lat,
+    m_lng: lng
   }
 
+  console.log(markerData)
+
   try {
-    const res = await axios.post('http://localhost:1337/save-order', markerData)
+    const res = await axios.post('http://localhost:1337/put-marker', markerData)
     alert(res)
   } catch (err) {
     console.error('Error: ', err)
   }
-
-  // User Feedback
 }
 
 onMounted(fetchMarkers)
