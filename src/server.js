@@ -38,7 +38,9 @@ app.post('/put-marker', (req, res) => {
     values (?, ?, ?, ?);
   `
 
-  db.run(orderInsertSql, markerData, function (err) {
+  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng]
+
+  db.run(orderInsertSql, values, function (err) {
     if (err) {
       console.error("Fehler beim Einfügen des Markers:", err.message)
       res.status(500).json({error: err.message})

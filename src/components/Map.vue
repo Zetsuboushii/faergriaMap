@@ -101,7 +101,7 @@ const addMarker = (event) => {
   const latLng = event.latlng
   markers.value.push({
     fk_m_type: 2,
-    fk_mt_region: "",
+    fk_mt_region: "faergria",
     m_id: -1,
     m_lat: latLng.lat,
     m_lng: latLng.lng,
@@ -110,8 +110,8 @@ const addMarker = (event) => {
     mt_name: "Dorf",
     mt_size: 40,
     mt_url: "poi",
-    r_id: "",
-    r_name: ""
+    r_id: "faergria",
+    r_name: "Faergria"
   })
 
   putMarker(latLng.lat, latLng.lng)
@@ -125,11 +125,8 @@ const putMarker = async (lat: number, lng: number) => {
     m_lng: lng
   }
 
-  console.log(markerData)
-
   try {
     const res = await axios.post('http://localhost:1337/put-marker', markerData)
-    alert(res)
   } catch (err) {
     console.error('Error: ', err)
   }
