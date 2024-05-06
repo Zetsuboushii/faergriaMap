@@ -65,6 +65,26 @@ app.post('/put-marker', (req, res) => {
   })
 })
 
+app.post('/delete-marker', (req, res) => {
+  const markerData = req.body
+
+  const orderInsertSql = `
+    delete from markers where m_id = ?;
+  `
+
+  const values = [markerData.m_id]
+
+  db.run(orderInsertSql, values, function (err) {
+    if (err) {
+      console.error("Fehler beim Löschen des Markers:", err.message)
+      res.status(500).json({error: err.message})
+      return
+    }
+
+    res.json({message: 'Marker erfolgreich gelöscht'})
+  })
+})
+
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`)
 })

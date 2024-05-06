@@ -23,35 +23,35 @@
         <l-tooltip>{{ marker.m_name }}</l-tooltip>
         <l-icon
           :icon-url="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.r_name + '.png'"
-          :icon-size="marker.mt_size"
+          :icon-size="[marker.mt_size, marker.mt_size]"
         ></l-icon>
       </l-marker>
     </l-map>
   </div>
-  <div class="drawer">
-    <div>
-      <label for="name">Name:</label>
+  <div v-if="drawerOpened" class="drawer">
+    <div class="drawer-content">
+      <label for="name">Name: </label>
       <input type="text" id="name" :value="selectedMarker?.m_name">
     </div>
-    <div>
-      <label for="markerType">Marker Type:</label>
+    <div class="drawer-content icon-selector">
+      <label for="markerType">MarkerType: </label>
       <select id="markerType">
         <option
           v-for="type in markerTypes"
           :key="type.mt_id"
           :value="type.mt_id"
         >
-          {{ type.mt_name }}
-          <!-- <v-img :src="'@/src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region"></v-img> -->
+          <img :src="'@/src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region + '.png'">
         </option>
       </select>
     </div>
+    <v-btn @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
   </div>
 </template>
 
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
-import {ref, onBeforeMount, onMounted} from 'vue';
+import {ref, onMounted} from 'vue';
 import {LIcon, LImageOverlay, LMap, LMarker, LTooltip} from "@vue-leaflet/vue-leaflet";
 import {CRS} from 'leaflet';
 import axios from "axios";
@@ -63,7 +63,7 @@ const center = ref([344.83, 344.83]);
 const zoom = ref(2);
 const maxBounds = ref([[0, 0], [689.66, 689.66]]);
 const maxBoundsViscosity = 1.0;
-const imageUrl = 'src/assets/map_iconless.png';
+const imageUrl = 'src/assets/map.png';
 const imageBounds = ref([[0, 0], [689.66, 689.66]]);
 
 interface Marker {
@@ -92,6 +92,8 @@ interface MarkerType {
 const markers = ref<Marker[]>([])
 const markerTypes = ref<MarkerType[]>([])
 const selectedMarker = ref<Marker>()
+
+const drawerOpened = ref<boolean>(false)
 
 const fetchMarkers = async () => {
   try {
@@ -166,10 +168,23 @@ const putMarker = async (lat: number, lng: number) => {
   } catch (err) {
     console.error('Error: ', err)
   }
+
+  await fetchMarkers()
+}
+
+const deleteMarker = async (marker: Marker) => {
+  const m_id = marker.m_id
+  try {
+    const res = await axios.post('http://localhost:1337/delete-marker', {m_id})
+  } catch (err) {
+    console.error('Error: ', err)
+  }
+  await fetchMarkers()
 }
 
 const editMarker = (marker: Marker) => {
   selectedMarker.value = marker
+  drawerOpened.value = true
 }
 
 onMounted(fetchMarkers)
@@ -179,7 +194,12 @@ onMounted(fetchMarkerTypes)
 <style scoped>
 .map-container {
   height: 100vh;
-  width: 90%;
+  width: 100%;
+  z-index: 1;
+}
+
+.leaflet-container {
+  z-index: 1;
 }
 
 .drawer {
@@ -187,8 +207,14 @@ onMounted(fetchMarkerTypes)
   top: 0;
   right: 0;
   width: 10%;
+  min-width: 300px;
   height: 100vh;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.75);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.drawer-content {
+  opacity: 100%;
 }
 </style>
