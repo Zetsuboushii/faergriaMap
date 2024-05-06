@@ -30,6 +30,20 @@ app.get('/markers', (req, res) => {
   })
 })
 
+app.get('/marker-types', (req, res) => {
+  const sql = 'select * from marker_types'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
+})
+
 app.post('/put-marker', (req, res) => {
   const markerData = req.body
 
