@@ -43,6 +43,7 @@
             :src="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.fk_mt_region + '.png'"
             aspect-ratio="1"
             cover
+            @click="selectedMarker.fk_m_type = marker.mt_id"
           >
             <template v-slot:placeholder>
               <v-row
@@ -61,7 +62,7 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" @click="">Update</v-btn>
+      <v-btn color="primary" @click="updateMarker(selectedMarker)">Update</v-btn>
       <v-btn @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
     </v-card-actions>
   </v-card>
@@ -76,12 +77,12 @@ import axios from "axios";
 
 const crs = CRS.Simple;
 const minZoom = 0;
-const maxZoom = 3;
+const maxZoom = 4;
 const center = ref([344.83, 344.83]);
 const zoom = ref(2);
 const maxBounds = ref([[0, 0], [689.66, 689.66]]);
 const maxBoundsViscosity = 1.0;
-const imageUrl = 'src/assets/map.png';
+const imageUrl = 'src/assets/map_iconless.png';
 const imageBounds = ref([[0, 0], [689.66, 689.66]]);
 
 interface Marker {
@@ -166,7 +167,7 @@ const fetchMarkerCeiling = async () => {
 
 const addMarker = (event) => {
   const latLng = event.latlng
-  markers.value.push({
+  const marker = {
     fk_m_type: 2,
     fk_mt_region: "faergria",
     m_id: markerCeiling.value.seq + 1,
@@ -179,8 +180,10 @@ const addMarker = (event) => {
     mt_url: "poi",
     r_id: "faergria",
     r_name: "Faergria"
-  })
-
+  }
+  markers.value.push(marker)
+  selectedMarker.value = marker
+  drawerOpened.value = true
   putMarker(latLng.lat, latLng.lng)
 }
 
@@ -198,6 +201,7 @@ const putMarker = async (lat: number, lng: number) => {
     console.error('Error: ', err)
   }
 
+  await fetchMarkerCeiling()
   await fetchMarkers()
 }
 
@@ -210,12 +214,24 @@ const deleteMarker = async (marker: Marker) => {
   } catch (err) {
     console.error('Error: ', err)
   }
+  await fetchMarkerCeiling()
   await fetchMarkers()
 }
 
 const editMarker = (marker: Marker) => {
   selectedMarker.value = marker
   drawerOpened.value = true
+  fetchMarkerCeiling()
+}
+
+const updateMarker = async (marker: Marker) => {
+  try {
+    const res = await axios.post('http://localhost:1337/update-marker', marker)
+  } catch (err) {
+    console.error('Error: ', err)
+  }
+  await fetchMarkerCeiling()
+  await fetchMarkers()
 }
 
 onMounted(fetchMarkers)

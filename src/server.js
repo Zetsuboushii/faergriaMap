@@ -90,7 +90,7 @@ app.post('/update-marker', (req, res) => {
 
   db.run(sql, values, function (err) {
     if (err) {
-      console.error("Fehler beim Einfügen des Markers:", err.message)
+      console.error("Fehler beim Aktualisieren des Markers:", err.message)
       res.status(500).json({error: err.message})
       return
     }
