@@ -28,30 +28,48 @@
       </l-marker>
     </l-map>
   </div>
-  <div v-if="drawerOpened" class="drawer">
-    <div class="drawer-content">
-      <label for="name">Name: </label>
-      <input type="text" id="name" :value="selectedMarker?.m_name">
-    </div>
-    <div class="drawer-content icon-selector">
-      <label for="markerType">MarkerType: </label>
-      <select id="markerType">
-        <option
-          v-for="type in markerTypes"
-          :key="type.mt_id"
-          :value="type.mt_id"
+  <v-card v-if="selectedMarker && drawerOpened" class="drawer">
+    <v-card-title class="headline">Marker Info</v-card-title>
+    <v-card-text>
+      <v-text-field label="Name" v-model="selectedMarker.m_name"></v-text-field>
+      <v-row class="icon-grid">
+        <v-col
+          v-for="marker in markerTypes"
+          :key="marker.mt_id"
+          class="d-flex child-flex"
+          cols="4"
         >
-          <img :src="'@/src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region + '.png'">
-        </option>
-      </select>
-    </div>
-    <v-btn @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
-  </div>
+          <v-img
+            :src="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.fk_mt_region + '.png'"
+            aspect-ratio="1"
+            cover
+          >
+            <template v-slot:placeholder>
+              <v-row
+                align="center"
+                class="fill-height ma-0"
+                justify="center"
+              >
+                <v-progress-circular
+                  color="grey-lighten-5"
+                  indeterminate
+                ></v-progress-circular>
+              </v-row>
+            </template>
+          </v-img>
+        </v-col>
+      </v-row>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn color="primary" @click="">Update</v-btn>
+      <v-btn @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
-import {ref, onMounted} from 'vue';
+import {onMounted, ref} from 'vue';
 import {LIcon, LImageOverlay, LMap, LMarker, LTooltip} from "@vue-leaflet/vue-leaflet";
 import {CRS} from 'leaflet';
 import axios from "axios";
@@ -91,6 +109,7 @@ interface MarkerType {
 
 const markers = ref<Marker[]>([])
 const markerTypes = ref<MarkerType[]>([])
+const markerCeiling = ref()
 const selectedMarker = ref<Marker>()
 
 const drawerOpened = ref<boolean>(false)
@@ -113,7 +132,6 @@ const fetchMarkers = async () => {
       r_id: marker.r_id,
       r_name: marker.r_name
     }))
-    console.log(markers.value)
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
   }
@@ -130,6 +148,17 @@ const fetchMarkerTypes = async () => {
       fk_mt_region: markerType.fk_mt_region,
       mt_size: markerType.mt_size
     }))
+    markerTypes.value.sort((a, b) => a.mt_name.localeCompare(b.mt_name))
+  } catch (error) {
+    console.error("Ein Fehler ist aufgetreten: ", error)
+  }
+}
+
+const fetchMarkerCeiling = async () => {
+  try {
+    const response = await fetch('http://localhost:1337/marker-ceiling')
+    const data = await response.json()
+    markerCeiling.value = data.data
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
   }
@@ -140,7 +169,7 @@ const addMarker = (event) => {
   markers.value.push({
     fk_m_type: 2,
     fk_mt_region: "faergria",
-    m_id: -1,
+    m_id: markerCeiling.value.seq + 1,
     m_lat: latLng.lat,
     m_lng: latLng.lng,
     m_name: "New Marker",
@@ -176,6 +205,8 @@ const deleteMarker = async (marker: Marker) => {
   const m_id = marker.m_id
   try {
     const res = await axios.post('http://localhost:1337/delete-marker', {m_id})
+    selectedMarker.value = undefined
+    drawerOpened.value = false
   } catch (err) {
     console.error('Error: ', err)
   }
@@ -189,6 +220,7 @@ const editMarker = (marker: Marker) => {
 
 onMounted(fetchMarkers)
 onMounted(fetchMarkerTypes)
+onMounted(fetchMarkerCeiling)
 </script>
 
 <style scoped>
@@ -214,7 +246,8 @@ onMounted(fetchMarkerTypes)
   z-index: 100;
 }
 
-.drawer-content {
-  opacity: 100%;
+.icon-grid {
+  height: 50vh;
+  overflow-y: scroll;
 }
 </style>
