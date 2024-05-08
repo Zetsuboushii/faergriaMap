@@ -30,6 +30,7 @@
     </l-map>
   </div>
   <v-card v-if="selectedMarker && drawerOpened" class="drawer">
+    <v-icon icon="mdi-close" @click="closeMarker" class="close-btn"></v-icon>
     <v-card-title class="headline">Marker Info</v-card-title>
     <v-card-text>
       <v-text-field label="Name" v-model="selectedMarker.m_name"></v-text-field>
@@ -121,6 +122,23 @@ const markerAdded = ref<boolean>(true)
 const getDistance = (xA: number, yA: number, xB: number, yB: number) => {
   return Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2))
 }
+
+const editMarker = (marker: Marker) => {
+  selectedMarker.value = marker
+  drawerOpened.value = true
+  markerAdded.value = true
+  fetchMarkerCeiling()
+}
+
+const closeMarker = () => {
+  drawerOpened.value = false
+  markerAdded.value = true
+  selectedMarker.value = undefined
+}
+
+/*
+  Database queries
+ */
 
 const fetchMarkers = async () => {
   try {
@@ -224,12 +242,6 @@ const deleteMarker = async (marker: Marker) => {
   await fetchMarkers()
 }
 
-const editMarker = (marker: Marker) => {
-  selectedMarker.value = marker
-  drawerOpened.value = true
-  fetchMarkerCeiling()
-}
-
 const updateMarker = async (marker: Marker) => {
   try {
     const res = await axios.post('http://localhost:1337/update-marker', marker)
@@ -271,5 +283,11 @@ onMounted(fetchMarkerCeiling)
 .icon-grid {
   height: 50vh;
   overflow-y: scroll;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 </style>
