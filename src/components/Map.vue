@@ -20,6 +20,7 @@
         :key="marker.m_id"
         :lat-lng="[marker.m_lat, marker.m_lng]"
         @click="editMarker(marker)"
+        @contextmenu="handleMarkerContextMenu($event, marker)"
       >
         <l-tooltip>{{ marker.m_name }}</l-tooltip>
         <l-icon
@@ -69,6 +70,16 @@
       <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker.m_lat, selectedMarker.m_lng)">Add Marker</v-btn>
     </v-card-actions>
   </v-card>
+  <div v-if="showAlert && selectedMarker" class="alert-overlay">
+    <v-alert
+      border="start"
+      border-color="deep-purple accent-4"
+      elevation="2"
+    >
+      <v-icon icon="mdi-close" @click="showAlert = false" class="close-btn"></v-icon>
+      Distance: {{ distance.toFixed(2) }}km
+    </v-alert>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -83,10 +94,10 @@ const minZoom = 0;
 const maxZoom = 4;
 const center = ref([344.83, 344.83]);
 const zoom = ref(2);
-const maxBounds = ref([[0, 0], [689.66, 689.66]]);
+const maxBounds = ref([[0, 0], [1379.32, 1379.32]]);
 const maxBoundsViscosity = 1.0;
 const imageUrl = 'src/assets/map_iconless.png';
-const imageBounds = ref([[0, 0], [689.66, 689.66]]);
+const imageBounds = ref([[0, 0], [1379.32, 1379.32]]);
 
 interface Marker {
   fk_m_type: number;
@@ -118,9 +129,11 @@ const selectedMarker = ref<Marker>()
 
 const drawerOpened = ref<boolean>(false)
 const markerAdded = ref<boolean>(true)
+const distance = ref<number>(0)
+const showAlert = ref<boolean>(false)
 
-const getDistance = (xA: number, yA: number, xB: number, yB: number) => {
-  return Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2))
+const getDistance = (a: Marker, b: Marker) => {
+  return Math.sqrt(Math.pow((b.m_lat - a.m_lat), 2) + Math.pow((b.m_lng - a.m_lng), 2))
 }
 
 const editMarker = (marker: Marker) => {
@@ -134,6 +147,13 @@ const closeMarker = () => {
   drawerOpened.value = false
   markerAdded.value = true
   selectedMarker.value = undefined
+}
+
+const handleMarkerContextMenu = (event, marker: Marker) => {
+  if (selectedMarker && selectedMarker.value != undefined) {
+    showAlert.value = true
+    distance.value = getDistance(selectedMarker.value, marker)
+  }
 }
 
 /*
@@ -289,5 +309,17 @@ onMounted(fetchMarkerCeiling)
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+.alert-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 20px;
+  width: 300px;
+  height: 10vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 </style>
