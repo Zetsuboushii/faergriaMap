@@ -2,7 +2,7 @@ const express = require('express')
 const sqlite3 = require('sqlite3').verbose()
 const cors = require('cors')
 const app = express()
-const PORT = 1337
+const PORT = 1338
 
 app.use(cors())
 app.use(express.json())
@@ -10,10 +10,6 @@ app.use(express.json())
 const db = new sqlite3.Database('./src/db.sqlite', sqlite3.OPEN_READWRITE, (err) => {
   if (err) return console.error(err.message)
   console.log('Verbunden mit der SQLite-Datenbank.')
-})
-
-app.get('/', (req, res) => {
-  const sql = 'select * from categories, item, collection, user, order'
 })
 
 app.get('/markers', (req, res) => {
@@ -146,6 +142,11 @@ app.post('/delete-marker', (req, res) => {
     res.json({message: 'Marker erfolgreich gelöscht'})
   })
 })
+
+/* route requests for static files to appropriate directory */
+app.use('/src',express.static("src/"))
+app.use(express.static("dist") )
+
 
 app.listen(PORT, () => {
   console.log(`Server läuft auf http://localhost:${PORT}`)

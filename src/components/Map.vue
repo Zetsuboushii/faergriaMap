@@ -86,18 +86,19 @@
 import "leaflet/dist/leaflet.css";
 import {onMounted, ref} from 'vue';
 import {LIcon, LImageOverlay, LMap, LMarker, LPolygon, LTooltip} from "@vue-leaflet/vue-leaflet";
-import {CRS} from 'leaflet';
+import {CRS, LatLngBoundsExpression, PointExpression} from 'leaflet';
 import axios from "axios";
 
-const crs = CRS.Simple;
-const minZoom = 0;
-const maxZoom = 4;
-const center = ref([689.66, 689.66]);
-const zoom = ref(1);
-const maxBounds = ref([[0, 0], [1379.32, 1379.32]]);
-const maxBoundsViscosity = 1.0;
-const imageUrl = 'src/assets/map_iconless.png';
-const imageBounds = ref([[0, 0], [1379.32, 1379.32]]);
+const crs = CRS.Simple
+const minZoom = 0
+const maxZoom = 4
+const center = ref<PointExpression>([689.66, 689.66])
+const zoom = ref(1)
+const maxBounds = ref([[0, 0], [1379.32, 1379.32]])
+const maxBoundsViscosity = 1.0
+const imageUrl = 'src/assets/map_iconless.png'
+const imageBounds = ref<LatLngBoundsExpression>([[0, 0], [1379.32, 1379.32]])
+const API_URL = import.meta.env.DEV ? "http://localhost:1338" : ""
 
 interface Marker {
   fk_m_type: number;
@@ -189,7 +190,7 @@ const editMarker = (marker: Marker) => {
   selectedMarker.value = marker
   drawerOpened.value = true
   markerAdded.value = true
-  fetchMarkerCeiling()
+  getMarkerCeiling()
 }
 
 const closeMarker = () => {
@@ -198,7 +199,7 @@ const closeMarker = () => {
   selectedMarker.value = undefined
 }
 
-const handleMarkerContextMenu = (event, marker: Marker) => {
+const handleMarkerContextMenu = (event: any, marker: Marker) => {
   if (selectedMarker && selectedMarker.value != undefined) {
     showAlert.value = true
     distance.value = getDistance(selectedMarker.value, marker)
@@ -209,9 +210,9 @@ const handleMarkerContextMenu = (event, marker: Marker) => {
   Database queries
  */
 
-const fetchMarkers = async () => {
+const getMarkers = async () => {
   try {
-    const response = await fetch('http://localhost:1337/markers')
+    const response = await fetch(API_URL + '/markers')
     const data = await response.json()
     markers.value = data.data.map((marker: Marker) => ({
       fk_m_type: marker.fk_m_type,
@@ -232,9 +233,9 @@ const fetchMarkers = async () => {
   }
 }
 
-const fetchMarkerTypes = async () => {
+const getMarkerTypes = async () => {
   try {
-    const response = await fetch('http://localhost:1337/marker-types')
+    const response = await fetch(API_URL + '/marker-types')
     const data = await response.json()
     markerTypes.value = data.data.map((markerType: MarkerType) => ({
       mt_id: markerType.mt_id,
@@ -249,9 +250,9 @@ const fetchMarkerTypes = async () => {
   }
 }
 
-const fetchMarkerCeiling = async () => {
+const getMarkerCeiling = async () => {
   try {
-    const response = await fetch('http://localhost:1337/marker-ceiling')
+    const response = await fetch(API_URL + '/marker-ceiling')
     const data = await response.json()
     markerCeiling.value = data.data
   } catch (error) {
@@ -259,9 +260,9 @@ const fetchMarkerCeiling = async () => {
   }
 }
 
-const fetchTerritoryPolygons = async () => {
+const getTerritoryPolygons = async () => {
   try {
-    const response = await fetch('http://localhost:1337/territory-polygons')
+    const response = await fetch(API_URL + '/territory-polygons')
     const data = await response.json()
     return data.data
   } catch (error) {
@@ -269,9 +270,9 @@ const fetchTerritoryPolygons = async () => {
   }
 }
 
-const fetchTerritories = async () => {
+const getTerritories = async () => {
   try {
-    const response = await fetch('http://localhost:1337/territories')
+    const response = await fetch(API_URL + '/territories')
     const data = await response.json()
     return data.data
   } catch (error) {
@@ -279,7 +280,7 @@ const fetchTerritories = async () => {
   }
 }
 
-const addMarker = (event) => {
+const addMarker = (event: any) => {
   const latLng = event.latlng
   selectedMarker.value = {
     fk_m_type: 2,
@@ -308,42 +309,42 @@ const putMarker = async (lat: number, lng: number) => {
   }
 
   try {
-    const res = await axios.post('http://localhost:1337/put-marker', markerData)
+    const res = await axios.post(API_URL + '/put-marker', markerData)
     markerAdded.value = true
   } catch (err) {
     console.error('Error: ', err)
   }
 
-  await fetchMarkerCeiling()
-  await fetchMarkers()
+  await getMarkerCeiling()
+  await getMarkers()
 }
 
 const deleteMarker = async (marker: Marker) => {
   const m_id = marker.m_id
   try {
-    const res = await axios.post('http://localhost:1337/delete-marker', {m_id})
+    const res = await axios.post(API_URL + '/delete-marker', {m_id})
     selectedMarker.value = undefined
     drawerOpened.value = false
   } catch (err) {
     console.error('Error: ', err)
   }
-  await fetchMarkerCeiling()
-  await fetchMarkers()
+  await getMarkerCeiling()
+  await getMarkers()
 }
 
 const updateMarker = async (marker: Marker) => {
   try {
-    const res = await axios.post('http://localhost:1337/update-marker', marker)
+    const res = await axios.post(API_URL + '/update-marker', marker)
   } catch (err) {
     console.error('Error: ', err)
   }
-  await fetchMarkerCeiling()
-  await fetchMarkers()
+  await getMarkerCeiling()
+  await getMarkers()
 }
 
-onMounted(fetchMarkers)
-onMounted(fetchMarkerTypes)
-onMounted(fetchMarkerCeiling)
+onMounted(getMarkers)
+onMounted(getMarkerTypes)
+onMounted(getMarkerCeiling)
 </script>
 
 <style scoped>
