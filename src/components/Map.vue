@@ -85,15 +85,15 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 import {onMounted, ref} from 'vue';
-import {LIcon, LImageOverlay, LMap, LMarker, LTooltip} from "@vue-leaflet/vue-leaflet";
+import {LIcon, LImageOverlay, LMap, LMarker, LPolygon, LTooltip} from "@vue-leaflet/vue-leaflet";
 import {CRS} from 'leaflet';
 import axios from "axios";
 
 const crs = CRS.Simple;
 const minZoom = 0;
 const maxZoom = 4;
-const center = ref([344.83, 344.83]);
-const zoom = ref(2);
+const center = ref([689.66, 689.66]);
+const zoom = ref(1);
 const maxBounds = ref([[0, 0], [1379.32, 1379.32]]);
 const maxBoundsViscosity = 1.0;
 const imageUrl = 'src/assets/map_iconless.png';
@@ -122,15 +122,64 @@ interface MarkerType {
   mt_size: number
 }
 
+interface Territory {
+  t_id: number
+  t_name: string
+  t_coords: TerritoryCoord[]
+}
+
+interface TerritoryCoord {
+  c_id: number
+  fk_p_id: string
+  fk_t_id: number
+  c_lat: number
+  c_lng: number
+}
+
 const markers = ref<Marker[]>([])
 const markerTypes = ref<MarkerType[]>([])
 const markerCeiling = ref()
+const territories = ref<Territory[]>([])
+
 const selectedMarker = ref<Marker>()
 
 const drawerOpened = ref<boolean>(false)
 const markerAdded = ref<boolean>(true)
 const distance = ref<number>(0)
 const showAlert = ref<boolean>(false)
+const polygonLatLngs = ref([
+  [701, 290.75],
+  [714.75, 321.5],
+  [729.25, 336.75],
+  [711.75, 362.5],
+  [725.5, 366.75],
+  [743.25, 423],
+  [742.75, 447.25],
+  [774.25, 471],
+  [760.75, 499.75],
+  [781.25, 498],
+  [807.5, 530.25],
+  [835.25, 526],
+  [840.75, 506],
+  [862, 502.5],
+  [879.5, 482.25],
+  [894.75, 467],
+  [930.25, 476.5],
+  [980, 457.25],
+  [998, 434.5],
+  [993.25, 382.75],
+  [976.75, 315.5],
+  [922.5, 297.75],
+  [898, 267.75],
+  [871.5, 270.5],
+  [854.25, 281],
+  [828.25, 279],
+  [807, 258],
+  [786.5, 253.25],
+  [767.75, 259.5],
+  [753.75, 273],
+  [706.5, 268.75]
+])
 
 const getDistance = (a: Marker, b: Marker) => {
   return Math.sqrt(Math.pow((b.m_lat - a.m_lat), 2) + Math.pow((b.m_lng - a.m_lng), 2))
@@ -205,6 +254,26 @@ const fetchMarkerCeiling = async () => {
     const response = await fetch('http://localhost:1337/marker-ceiling')
     const data = await response.json()
     markerCeiling.value = data.data
+  } catch (error) {
+    console.error("Ein Fehler ist aufgetreten: ", error)
+  }
+}
+
+const fetchTerritoryPolygons = async () => {
+  try {
+    const response = await fetch('http://localhost:1337/territory-polygons')
+    const data = await response.json()
+    return data.data
+  } catch (error) {
+    console.error("Ein Fehler ist aufgetreten: ", error)
+  }
+}
+
+const fetchTerritories = async () => {
+  try {
+    const response = await fetch('http://localhost:1337/territories')
+    const data = await response.json()
+    return data.data
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
   }

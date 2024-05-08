@@ -58,6 +58,34 @@ app.get('/marker-ceiling', (req, res) => {
   })
 })
 
+app.get('/territories', (req, res) => {
+  const sql = 'select * from territories order by t_id'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
+})
+
+app.get('/territory-coords', (req, res) => {
+  const sql = 'select * from territory_coords order by fk_t_id'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
+})
+
 app.post('/put-marker', (req, res) => {
   const markerData = req.body
 
