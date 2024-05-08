@@ -24,9 +24,9 @@
       >
         <l-tooltip>{{ marker.m_name }}</l-tooltip>
         <l-icon
-          v-bind:icon-url="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.r_id + '.png'"
-          :icon-size="[marker.mt_size, marker.mt_size]"
-        ></l-icon>
+            :icon-url="'src/assets/markers/marker_poi_faergria.png'"
+            :icon-size="[marker.mt_size, marker.mt_size]"
+        />
       </l-marker>
     </l-map>
   </div>
