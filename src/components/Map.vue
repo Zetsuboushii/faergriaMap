@@ -16,7 +16,8 @@
         :bounds="imageBounds"
       ></l-image-overlay>
       <l-marker
-        v-for="marker in markers"
+        v-for="marker in markers.concat(selectedMarker ? [selectedMarker] : [])"
+        :key="marker.m_id"
         :lat-lng="[marker.m_lat, marker.m_lng]"
         @click="editMarker(marker)"
       >
@@ -64,6 +65,7 @@
     <v-card-actions>
       <v-btn color="primary" @click="updateMarker(selectedMarker)">Update</v-btn>
       <v-btn @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
+      <v-btn @click="putMarker(selectedMarker.m_lat, selectedMarker.m_lng)">Add Marker</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -171,7 +173,7 @@ const fetchMarkerCeiling = async () => {
 
 const addMarker = (event) => {
   const latLng = event.latlng
-  const marker = {
+  selectedMarker.value = {
     fk_m_type: 2,
     fk_mt_region: "faergria",
     m_id: markerCeiling.value.seq + 1,
@@ -185,10 +187,7 @@ const addMarker = (event) => {
     r_id: "faergria",
     r_name: "Faergria"
   }
-  markers.value.push(marker)
-  selectedMarker.value = marker
   drawerOpened.value = true
-  putMarker(latLng.lat, latLng.lng)
 }
 
 const putMarker = async (lat: number, lng: number) => {
