@@ -63,9 +63,9 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" @click="updateMarker(selectedMarker)">Update</v-btn>
-      <v-btn @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
-      <v-btn @click="putMarker(selectedMarker.m_lat, selectedMarker.m_lng)">Add Marker</v-btn>
+      <v-btn v-if="markerAdded" color="primary" @click="updateMarker(selectedMarker)">Update</v-btn>
+      <v-btn v-if="markerAdded" @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
+      <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker.m_lat, selectedMarker.m_lng)">Add Marker</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -116,8 +116,9 @@ const markerCeiling = ref()
 const selectedMarker = ref<Marker>()
 
 const drawerOpened = ref<boolean>(false)
+const markerAdded = ref<boolean>(true)
 
-const getDistance = (xA: number, yA: nuer, xB: number, yB: number) => {
+const getDistance = (xA: number, yA: number, xB: number, yB: number) => {
   return Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2))
 }
 
@@ -188,6 +189,7 @@ const addMarker = (event) => {
     r_name: "Faergria"
   }
   drawerOpened.value = true
+  markerAdded.value = false
 }
 
 const putMarker = async (lat: number, lng: number) => {
@@ -200,6 +202,7 @@ const putMarker = async (lat: number, lng: number) => {
 
   try {
     const res = await axios.post('http://localhost:1337/put-marker', markerData)
+    markerAdded.value = true
   } catch (err) {
     console.error('Error: ', err)
   }
