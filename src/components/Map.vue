@@ -115,6 +115,10 @@ const selectedMarker = ref<Marker>()
 
 const drawerOpened = ref<boolean>(false)
 
+const getDistance = (xA: number, yA: nuer, xB: number, yB: number) => {
+  return Math.sqrt(Math.pow((xB - xA), 2) + Math.pow((yB - yA), 2))
+}
+
 const fetchMarkers = async () => {
   try {
     const response = await fetch('http://localhost:1337/markers')
