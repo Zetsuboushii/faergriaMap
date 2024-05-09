@@ -30,12 +30,9 @@ export interface Marker {
   m_lat: number;
   m_lng: number;
   m_name: string;
-  mt_id: number;
-  mt_name: string;
-  mt_size: number;
-  mt_url: string;
   r_id: string;
   r_name: string;
+  m_type: MarkerType
 }
 
 export interface MarkerType {

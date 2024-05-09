@@ -27,7 +27,7 @@ app.get('/markers', (req, res) => {
 })
 
 app.get('/marker-types', (req, res) => {
-  const sql = 'select * from marker_types'
+  const sql = 'select * from marker_types order by fk_mt_region, mt_name'
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})
@@ -111,7 +111,7 @@ app.post('/update-marker', (req, res) => {
     update markers set fk_m_type = ?, m_name = ? where m_id = ?
   `
 
-  const values = [markerData.fk_m_type, markerData.m_name, markerData.m_id]
+  const values = [markerData.m_type.mt_id, markerData.m_name, markerData.m_id]
 
   db.run(sql, values, function (err) {
     if (err) {

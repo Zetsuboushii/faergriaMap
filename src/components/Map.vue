@@ -10,7 +10,6 @@
       :center="center"
       :zoom="zoom"
       @click="addMarker"
-      @keyup.space="console.log('knechto')"
     >
       <l-image-overlay
         :url="imageUrl"
@@ -21,7 +20,7 @@
                    :options="{ color: regionColors[territory.fk_t_region] }"></l-polygon>
       </div>
       <l-marker
-        v-for="marker in markers.concat(selectedMarker ? [selectedMarker] : [])"
+        v-for="marker in markers"
         :key="marker.m_id"
         :lat-lng="[marker.m_lat, marker.m_lng]"
         @click="editMarker(marker)"
@@ -29,8 +28,8 @@
       >
         <l-tooltip>{{ marker.m_name }}</l-tooltip>
         <l-icon
-          :icon-url="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.fk_mt_region + '.png'"
-          :icon-size="[marker.mt_size, marker.mt_size]"
+          :icon-url="'src/assets/markers/marker_' + marker.m_type.mt_url + '_' + marker.m_type.fk_mt_region + '.png'"
+          :icon-size="[marker.m_type.mt_size, marker.m_type.mt_size]"
         />
       </l-marker>
     </l-map>
@@ -39,19 +38,23 @@
     <v-icon icon="mdi-close" @click="closeMarker" class="close-btn"></v-icon>
     <v-card-title class="headline">Marker Info</v-card-title>
     <v-card-text>
-      <v-text-field label="Name" v-model="selectedMarker.m_name"></v-text-field>
+      <v-text-field
+        label="Name"
+        v-model="selectedMarker.m_name"
+        @change="updateMarker(selectedMarker)"
+      ></v-text-field>
       <v-row class="icon-grid">
         <v-col
-          v-for="marker in markerTypes"
-          :key="marker.mt_id"
+          v-for="type in markerTypes"
+          :key="type.mt_id"
           class="d-flex child-flex"
           cols="4"
         >
           <v-img
-            :src="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.fk_mt_region + '.png'"
+            :src="'src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region + '.png'"
             aspect-ratio="1"
             cover
-            @click="selectedMarker.fk_m_type = marker.mt_id"
+            @click="selectedMarker.m_type = type; updateMarker(selectedMarker)"
           >
             <template v-slot:placeholder>
               <v-row
@@ -70,9 +73,8 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn v-if="markerAdded" color="primary" @click="updateMarker(selectedMarker)">Update</v-btn>
       <v-btn v-if="markerAdded" @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
-      <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker.m_lat, selectedMarker.m_lng)">Add Marker</v-btn>
+      <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker)">Add Marker</v-btn>
     </v-card-actions>
   </v-card>
   <div v-if="showAlert && selectedMarker" class="alert-overlay">
@@ -89,7 +91,7 @@
 
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
-import {onMounted, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {LIcon, LImageOverlay, LMap, LMarker, LPolygon, LTooltip} from "@vue-leaflet/vue-leaflet";
 import axios from "axios";
 import {
@@ -116,6 +118,7 @@ const markerCeiling = ref()
 const territories = ref<Territory[]>([])
 
 const selectedMarker = ref<Marker>()
+
 const drawerOpened = ref<boolean>(false)
 const markerAdded = ref<boolean>(true)
 const distance = ref<number>(0)
@@ -135,12 +138,15 @@ const addMarker = (event: any) => {
     m_lat: latLng.lat,
     m_lng: latLng.lng,
     m_name: "New Marker",
-    mt_id: 2,
-    mt_name: "Dorf",
-    mt_size: 40,
-    mt_url: "poi",
     r_id: "faergria",
-    r_name: "Faergria"
+    r_name: "Faergria",
+    m_type: {
+      mt_id: 2,
+      mt_name: "Point of Interest",
+      mt_url: "poi",
+      fk_mt_region: "faergria",
+      mt_size: 40
+    }
   }
   drawerOpened.value = true
   markerAdded.value = false
@@ -175,18 +181,14 @@ const getMarkers = async () => {
     const response = await fetch(API_URL + '/markers')
     const data = await response.json()
     markers.value = data.data.map((marker: Marker) => ({
-      fk_m_type: marker.fk_m_type,
       fk_mt_region: marker.fk_mt_region,
       m_id: marker.m_id,
       m_lat: marker.m_lat,
       m_lng: marker.m_lng,
       m_name: marker.m_name,
-      mt_id: marker.mt_id,
-      mt_name: marker.mt_name,
-      mt_size: marker.mt_size,
-      mt_url: marker.mt_url,
       r_id: marker.r_id,
-      r_name: marker.r_name
+      r_name: marker.r_name,
+      m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
@@ -204,7 +206,7 @@ const getMarkerTypes = async () => {
       fk_mt_region: markerType.fk_mt_region,
       mt_size: markerType.mt_size
     }))
-    markerTypes.value.sort((a, b) => a.mt_name.localeCompare(b.mt_name))
+    markerTypes.value
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
   }
@@ -257,12 +259,12 @@ const getTerritoryCoords = async (t_id: number) => {
   }
 }
 
-const putMarker = async (lat: number, lng: number) => {
+const putMarker = async (marker: Marker) => {
   const markerData = {
-    m_name: "New Marker",
-    fk_m_type: 2,
-    m_lat: lat,
-    m_lng: lng
+    m_name: marker.m_name,
+    fk_m_type: marker.m_type.mt_id,
+    m_lat: marker.m_lat,
+    m_lng: marker.m_lng
   }
 
   try {
@@ -274,6 +276,7 @@ const putMarker = async (lat: number, lng: number) => {
 
   await getMarkerCeiling()
   await getMarkers()
+  console.log(selectedMarker.value)
 }
 
 const deleteMarker = async (marker: Marker) => {
@@ -287,23 +290,23 @@ const deleteMarker = async (marker: Marker) => {
   }
   await getMarkerCeiling()
   await getMarkers()
+  console.log(selectedMarker.value)
 }
 
 const updateMarker = async (marker: Marker) => {
   try {
     const res = await axios.post(API_URL + '/update-marker', marker)
-    selectedMarker.value = marker
-    markerAdded.value = true
   } catch (err) {
     console.error('Error: ', err)
   }
   await getMarkerCeiling()
   await getMarkers()
+  console.log(selectedMarker.value)
 }
 
 onMounted(() => {
-  getMarkers()
   getMarkerTypes()
+  getMarkers()
   getMarkerCeiling()
   getTerritories()
 })
