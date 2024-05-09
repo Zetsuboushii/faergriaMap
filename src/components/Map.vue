@@ -131,7 +131,7 @@ const markerAdded = ref<boolean>(true)
 const distance = ref<number>(0)
 const showAlert = ref<boolean>(false)
 const options = ref({
-  territoriesShow: false
+  territoriesShow: true
 })
 
 const getDistance = (a: Marker, b: Marker) => {
@@ -159,6 +159,7 @@ const addMarker = (event: any) => {
   }
   drawerOpened.value = true
   markerAdded.value = false
+  //putMarker(selectedMarker.value)
 }
 
 const editMarker = (marker: Marker) => {
