@@ -68,9 +68,10 @@ app.get('/territories', (req, res) => {
   })
 })
 
-app.get('/territory-coords', (req, res) => {
-  const sql = 'select * from territory_coords order by fk_t_id'
-  db.all(sql, [], (err, rows) => {
+app.post('/territory-coords', (req, res) => {
+  const territoryData = req.body
+  const sql = 'select c.c_lat, c.c_lng from territory_coords c join territories t on t.t_id = c.fk_t_id where t.t_id = ?'
+  db.all(sql, [territoryData.t_id], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})
       return

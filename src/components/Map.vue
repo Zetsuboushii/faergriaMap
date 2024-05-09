@@ -10,11 +10,16 @@
       :center="center"
       :zoom="zoom"
       @click="addMarker"
+      @keyup.space="console.log('knechto')"
     >
       <l-image-overlay
         :url="imageUrl"
         :bounds="imageBounds"
       ></l-image-overlay>
+      <div v-if="showPolygons" v-for="territory in territories" :key="territory.t_id">
+        <l-polygon :lat-lngs="territory.t_coords.map(coord => [coord.c_lat, coord.c_lng])"
+                   :options="{ color: regionColors[territory.fk_t_region] }"></l-polygon>
+      </div>
       <l-marker
         v-for="marker in markers.concat(selectedMarker ? [selectedMarker] : [])"
         :key="marker.m_id"
@@ -24,8 +29,8 @@
       >
         <l-tooltip>{{ marker.m_name }}</l-tooltip>
         <l-icon
-            :icon-url="'src/assets/markers/marker_poi_faergria.png'"
-            :icon-size="[marker.mt_size, marker.mt_size]"
+          :icon-url="'src/assets/markers/marker_' + marker.mt_url + '_' + marker.fk_mt_region + '.png'"
+          :icon-size="[marker.mt_size, marker.mt_size]"
         />
       </l-marker>
     </l-map>
@@ -86,56 +91,24 @@
 import "leaflet/dist/leaflet.css";
 import {onMounted, ref} from 'vue';
 import {LIcon, LImageOverlay, LMap, LMarker, LPolygon, LTooltip} from "@vue-leaflet/vue-leaflet";
-import {CRS, LatLngBoundsExpression, PointExpression} from 'leaflet';
 import axios from "axios";
-
-const crs = CRS.Simple
-const minZoom = 0
-const maxZoom = 4
-const center = ref<PointExpression>([689.66, 689.66])
-const zoom = ref(1)
-const maxBounds = ref([[0, 0], [1379.32, 1379.32]])
-const maxBoundsViscosity = 1.0
-const imageUrl = 'src/assets/map_iconless.png'
-const imageBounds = ref<LatLngBoundsExpression>([[0, 0], [1379.32, 1379.32]])
-const API_URL = import.meta.env.DEV ? "http://localhost:1338" : ""
-
-interface Marker {
-  fk_m_type: number;
-  fk_mt_region: string;
-  m_id: number;
-  m_lat: number;
-  m_lng: number;
-  m_name: string;
-  mt_id: number;
-  mt_name: string;
-  mt_size: number;
-  mt_url: string;
-  r_id: string;
-  r_name: string;
-}
-
-interface MarkerType {
-  mt_id: number
-  mt_name: string
-  mt_url: string
-  fk_mt_region: string
-  mt_size: number
-}
-
-interface Territory {
-  t_id: number
-  t_name: string
-  t_coords: TerritoryCoord[]
-}
-
-interface TerritoryCoord {
-  c_id: number
-  fk_p_id: string
-  fk_t_id: number
-  c_lat: number
-  c_lng: number
-}
+import {
+  API_URL,
+  center,
+  crs,
+  imageBounds,
+  imageUrl,
+  Marker,
+  MarkerType,
+  maxBounds,
+  maxBoundsViscosity,
+  maxZoom,
+  minZoom,
+  regionColors,
+  Territory,
+  TerritoryCoord,
+  zoom
+} from "@/lib/api/mapData";
 
 const markers = ref<Marker[]>([])
 const markerTypes = ref<MarkerType[]>([])
@@ -143,47 +116,34 @@ const markerCeiling = ref()
 const territories = ref<Territory[]>([])
 
 const selectedMarker = ref<Marker>()
-
 const drawerOpened = ref<boolean>(false)
 const markerAdded = ref<boolean>(true)
 const distance = ref<number>(0)
 const showAlert = ref<boolean>(false)
-const polygonLatLngs = ref([
-  [701, 290.75],
-  [714.75, 321.5],
-  [729.25, 336.75],
-  [711.75, 362.5],
-  [725.5, 366.75],
-  [743.25, 423],
-  [742.75, 447.25],
-  [774.25, 471],
-  [760.75, 499.75],
-  [781.25, 498],
-  [807.5, 530.25],
-  [835.25, 526],
-  [840.75, 506],
-  [862, 502.5],
-  [879.5, 482.25],
-  [894.75, 467],
-  [930.25, 476.5],
-  [980, 457.25],
-  [998, 434.5],
-  [993.25, 382.75],
-  [976.75, 315.5],
-  [922.5, 297.75],
-  [898, 267.75],
-  [871.5, 270.5],
-  [854.25, 281],
-  [828.25, 279],
-  [807, 258],
-  [786.5, 253.25],
-  [767.75, 259.5],
-  [753.75, 273],
-  [706.5, 268.75]
-])
+const showPolygons = ref<boolean>(false)
 
 const getDistance = (a: Marker, b: Marker) => {
   return Math.sqrt(Math.pow((b.m_lat - a.m_lat), 2) + Math.pow((b.m_lng - a.m_lng), 2))
+}
+
+const addMarker = (event: any) => {
+  const latLng = event.latlng
+  selectedMarker.value = {
+    fk_m_type: 2,
+    fk_mt_region: "faergria",
+    m_id: markerCeiling.value.seq + 1,
+    m_lat: latLng.lat,
+    m_lng: latLng.lng,
+    m_name: "New Marker",
+    mt_id: 2,
+    mt_name: "Dorf",
+    mt_size: 40,
+    mt_url: "poi",
+    r_id: "faergria",
+    r_name: "Faergria"
+  }
+  drawerOpened.value = true
+  markerAdded.value = false
 }
 
 const editMarker = (marker: Marker) => {
@@ -260,44 +220,41 @@ const getMarkerCeiling = async () => {
   }
 }
 
-const getTerritoryPolygons = async () => {
-  try {
-    const response = await fetch(API_URL + '/territory-polygons')
-    const data = await response.json()
-    return data.data
-  } catch (error) {
-    console.error("Ein Fehler ist aufgetreten: ", error)
-  }
-}
-
 const getTerritories = async () => {
   try {
     const response = await fetch(API_URL + '/territories')
     const data = await response.json()
-    return data.data
+    for (const territory of data.data) {
+      const coords = await getTerritoryCoords(territory.t_id)
+      territories.value.push({
+        t_id: territory.t_id,
+        t_name: territory.t_name,
+        fk_t_region: territory.fk_t_region,
+        t_coords: coords
+      })
+    }
   } catch (error) {
     console.error("Ein Fehler ist aufgetreten: ", error)
   }
 }
 
-const addMarker = (event: any) => {
-  const latLng = event.latlng
-  selectedMarker.value = {
-    fk_m_type: 2,
-    fk_mt_region: "faergria",
-    m_id: markerCeiling.value.seq + 1,
-    m_lat: latLng.lat,
-    m_lng: latLng.lng,
-    m_name: "New Marker",
-    mt_id: 2,
-    mt_name: "Dorf",
-    mt_size: 40,
-    mt_url: "poi",
-    r_id: "faergria",
-    r_name: "Faergria"
+const getTerritoryCoords = async (t_id: number) => {
+  try {
+    const response = await fetch(API_URL + '/territory-coords', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({t_id: t_id})
+    })
+    const data = await response.json()
+    return data.data.map((coord: TerritoryCoord) => ({
+      c_lat: coord.c_lat,
+      c_lng: coord.c_lng
+    }))
+  } catch (error) {
+    console.error("Ein Fehler ist aufgetreten: ", error)
   }
-  drawerOpened.value = true
-  markerAdded.value = false
 }
 
 const putMarker = async (lat: number, lng: number) => {
@@ -335,6 +292,8 @@ const deleteMarker = async (marker: Marker) => {
 const updateMarker = async (marker: Marker) => {
   try {
     const res = await axios.post(API_URL + '/update-marker', marker)
+    selectedMarker.value = marker
+    markerAdded.value = true
   } catch (err) {
     console.error('Error: ', err)
   }
@@ -342,19 +301,18 @@ const updateMarker = async (marker: Marker) => {
   await getMarkers()
 }
 
-onMounted(getMarkers)
-onMounted(getMarkerTypes)
-onMounted(getMarkerCeiling)
+onMounted(() => {
+  getMarkers()
+  getMarkerTypes()
+  getMarkerCeiling()
+  getTerritories()
+})
 </script>
 
 <style scoped>
 .map-container {
   height: 100vh;
   width: 100%;
-  z-index: 1;
-}
-
-.leaflet-container {
   z-index: 1;
 }
 
@@ -367,7 +325,7 @@ onMounted(getMarkerCeiling)
   height: 100vh;
   background-color: rgba(255, 255, 255, 0.75);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 100;
+  z-index: 9999;
 }
 
 .icon-grid {
@@ -390,6 +348,6 @@ onMounted(getMarkerCeiling)
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 999;
 }
 </style>
