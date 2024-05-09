@@ -15,7 +15,7 @@
         :url="imageUrl"
         :bounds="imageBounds"
       ></l-image-overlay>
-      <div v-if="showPolygons" v-for="territory in territories" :key="territory.t_id">
+      <div v-if="options.territoriesShow" v-for="territory in territories" :key="territory.t_id">
         <l-polygon :lat-lngs="territory.t_coords.map(coord => [coord.c_lat, coord.c_lng])"
                    :options="{ color: regionColors[territory.fk_t_region] }"></l-polygon>
       </div>
@@ -77,14 +77,21 @@
       <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker)">Add Marker</v-btn>
     </v-card-actions>
   </v-card>
-  <div v-if="showAlert && selectedMarker" class="alert-overlay">
+  <div>
     <v-alert
       border="start"
       border-color="deep-purple accent-4"
       elevation="2"
+      class="option-overlay"
     >
       <v-icon icon="mdi-close" @click="showAlert = false" class="close-btn"></v-icon>
-      Distance: {{ distance.toFixed(2) }}km
+      <v-checkbox
+        v-model="options.territoriesShow"
+        label="Show Regions"
+      ></v-checkbox>
+      <div v-if="showAlert && selectedMarker">
+        Distance: {{ distance.toFixed(2) }}km
+      </div>
     </v-alert>
   </div>
 </template>
@@ -123,7 +130,9 @@ const drawerOpened = ref<boolean>(false)
 const markerAdded = ref<boolean>(true)
 const distance = ref<number>(0)
 const showAlert = ref<boolean>(false)
-const showPolygons = ref<boolean>(false)
+const options = ref({
+  territoriesShow: false
+})
 
 const getDistance = (a: Marker, b: Marker) => {
   return Math.sqrt(Math.pow((b.m_lat - a.m_lat), 2) + Math.pow((b.m_lng - a.m_lng), 2))
@@ -342,15 +351,14 @@ onMounted(() => {
   right: 10px;
 }
 
-.alert-overlay {
+.option-overlay {
   position: fixed;
   bottom: 0;
-  left: 20px;
+  left: 0;
+  margin: 10px;
   width: 300px;
-  height: 10vh;
+  max-height: 10vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 999;
 }
 </style>
