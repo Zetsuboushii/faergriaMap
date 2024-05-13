@@ -87,11 +87,11 @@ app.post('/put-marker', (req, res) => {
   const markerData = req.body
 
   const sql = `
-    insert into markers (m_name, fk_m_type, m_lat, m_lng)
-    values (?, ?, ?, ?);
+    insert into markers (m_name, fk_m_type, m_lat, m_lng, m_editable)
+    values (?, ?, ?, ?, ?);
   `
 
-  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng]
+  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng, markerData.m_editable]
 
   db.run(sql, values, function (err) {
     if (err) {

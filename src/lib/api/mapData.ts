@@ -1,5 +1,5 @@
-import {CRS, LatLngBoundsExpression, PointExpression} from "leaflet";
-import {ref} from "vue";
+import {CRS, LatLngBoundsExpression, PointExpression} from "leaflet"
+import {ref} from "vue"
 
 export const crs = CRS.Simple
 export const minZoom = 0
@@ -24,14 +24,15 @@ export const regionColors: { [key: number]: string } = {
 }
 
 export interface Marker {
-  fk_m_type: number;
-  fk_mt_region: string;
-  m_id: number;
-  m_lat: number;
-  m_lng: number;
-  m_name: string;
-  r_id: string;
-  r_name: string;
+  fk_m_type: number
+  fk_mt_region: string
+  m_id: number
+  m_lat: number
+  m_lng: number
+  m_name: string
+  r_id: string
+  r_name: string
+  m_editable: number,
   m_type: MarkerType
 }
 

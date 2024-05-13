@@ -1,5 +1,12 @@
 <template>
   <div class="map-container">
+    <div class="top-bar">
+      <v-row class="fill-height" align="center">
+        <v-col>
+          <span class="top-text text-h4">{{ currentRegion }}</span>
+        </v-col>
+      </v-row>
+    </div>
     <l-map
       :useGlobalLeaflet="false"
       :crs="crs"
@@ -15,9 +22,16 @@
         :url="imageUrl"
         :bounds="imageBounds"
       ></l-image-overlay>
-      <div v-if="options.territoriesShow" v-for="territory in territories" :key="territory.t_id">
-        <l-polygon :lat-lngs="territory.t_coords.map(coord => [coord.c_lat, coord.c_lng])"
-                   :options="{ color: regionColors[territory.fk_t_region] }"></l-polygon>
+      <div v-for="territory in territories" :key="territory.t_id">
+        <l-polygon
+          :lat-lngs="territory.t_coords.map(coord => [coord.c_lat, coord.c_lng])"
+          :options="{
+            color: regionColors[territory.fk_t_region],
+            opacity: territoriesShow ? polygonOpacity : 0,
+            fillOpacity: territoriesShow ? polygonFillOpacity : 0
+          }"
+          @mouseover="currentRegion = territory.t_name"
+        ></l-polygon>
       </div>
       <l-marker
         v-for="marker in markers"
@@ -34,7 +48,7 @@
       </l-marker>
     </l-map>
   </div>
-  <v-card v-if="selectedMarker && drawerOpened" class="drawer">
+  <v-card v-if="selectedMarker && drawerOpened && selectedMarker.m_editable == 1" class="drawer">
     <v-icon icon="mdi-close" @click="closeMarker" class="close-btn"></v-icon>
     <v-card-title class="headline">Marker Info</v-card-title>
     <v-card-text>
@@ -77,28 +91,32 @@
       <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker)">Add Marker</v-btn>
     </v-card-actions>
   </v-card>
-  <div>
-    <v-alert
+  <v-card
       border="start"
       border-color="deep-purple accent-4"
       elevation="2"
       class="option-overlay"
-    >
-      <v-icon icon="mdi-close" @click="showAlert = false" class="close-btn"></v-icon>
-      <v-checkbox
-        v-model="options.territoriesShow"
-        label="Show Regions"
-      ></v-checkbox>
-      <div v-if="showAlert && selectedMarker">
-        Distance: {{ distance.toFixed(2) }}km
-      </div>
-    </v-alert>
-  </div>
+  >
+    <v-row dense align="center">
+      <v-col cols="auto">
+        <v-checkbox
+          v-model="territoriesShow"
+          label="Show Regions"
+          class="regionChecker"
+        ></v-checkbox>
+      </v-col>
+      <v-col cols="auto" class="text-right">
+        <div v-if="selectedMarker" class="distance">
+          Distance: {{ distance.toFixed(2) }}km
+        </div>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
-import {onMounted, reactive, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import {LIcon, LImageOverlay, LMap, LMarker, LPolygon, LTooltip} from "@vue-leaflet/vue-leaflet";
 import axios from "axios";
 import {
@@ -125,14 +143,15 @@ const markerCeiling = ref()
 const territories = ref<Territory[]>([])
 
 const selectedMarker = ref<Marker>()
+const currentRegion = ref<string>()
 
 const drawerOpened = ref<boolean>(false)
 const markerAdded = ref<boolean>(true)
 const distance = ref<number>(0)
 const showAlert = ref<boolean>(false)
-const options = ref({
-  territoriesShow: true
-})
+const territoriesShow = ref<boolean>(true)
+const polygonOpacity = ref<number>(1)
+const polygonFillOpacity = ref<number>(0.2)
 
 const getDistance = (a: Marker, b: Marker) => {
   return Math.sqrt(Math.pow((b.m_lat - a.m_lat), 2) + Math.pow((b.m_lng - a.m_lng), 2))
@@ -149,6 +168,7 @@ const addMarker = (event: any) => {
     m_name: "New Marker",
     r_id: "faergria",
     r_name: "Faergria",
+    m_editable: 1,
     m_type: {
       mt_id: 2,
       mt_name: "Point of Interest",
@@ -159,7 +179,7 @@ const addMarker = (event: any) => {
   }
   drawerOpened.value = true
   markerAdded.value = false
-  //putMarker(selectedMarker.value)
+  putMarker(selectedMarker.value)
 }
 
 const editMarker = (marker: Marker) => {
@@ -198,6 +218,7 @@ const getMarkers = async () => {
       m_name: marker.m_name,
       r_id: marker.r_id,
       r_name: marker.r_name,
+      m_editable: marker.m_editable,
       m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
   } catch (error) {
@@ -274,7 +295,8 @@ const putMarker = async (marker: Marker) => {
     m_name: marker.m_name,
     fk_m_type: marker.m_type.mt_id,
     m_lat: marker.m_lat,
-    m_lng: marker.m_lng
+    m_lng: marker.m_lng,
+    m_editable: marker.m_editable
   }
 
   try {
@@ -286,7 +308,6 @@ const putMarker = async (marker: Marker) => {
 
   await getMarkerCeiling()
   await getMarkers()
-  console.log(selectedMarker.value)
 }
 
 const deleteMarker = async (marker: Marker) => {
@@ -300,7 +321,6 @@ const deleteMarker = async (marker: Marker) => {
   }
   await getMarkerCeiling()
   await getMarkers()
-  console.log(selectedMarker.value)
 }
 
 const updateMarker = async (marker: Marker) => {
@@ -311,14 +331,24 @@ const updateMarker = async (marker: Marker) => {
   }
   await getMarkerCeiling()
   await getMarkers()
-  console.log(selectedMarker.value)
 }
 
 onMounted(() => {
   getMarkerTypes()
-  getMarkers()
-  getMarkerCeiling()
   getTerritories()
+  setInterval(() => {
+    getMarkers()
+    getMarkerCeiling()
+  }, 500)
+})
+watch(territoriesShow, (newVal) => {
+  polygonOpacity.value = newVal ? 1 : 0;
+  polygonFillOpacity.value = newVal ? 0.2 : 0;
+  console.log(polygonOpacity.value)
+})
+
+watch(polygonFillOpacity, (newVal) => {
+  polygonOptions.value.fillOpacity = newVal;
 })
 </script>
 
@@ -327,6 +357,26 @@ onMounted(() => {
   height: 100vh;
   width: 100%;
   z-index: 1;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  padding: 10px;
+  text-align: center;
+}
+
+.top-text {
+  font-weight: bold;
+  font-family: serif;
+  color: white;
+  position: relative;
+  text-decoration: underline;
+  text-decoration-color: white;
+  text-shadow: 1px 1px 2px black;
 }
 
 .drawer {
@@ -353,13 +403,10 @@ onMounted(() => {
 }
 
 .option-overlay {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  margin: 10px;
-  width: 300px;
-  max-height: 10vh;
-  display: flex;
-  z-index: 999;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 5px;
+  z-index: 1000;
 }
 </style>
