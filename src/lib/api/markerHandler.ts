@@ -50,7 +50,7 @@ export function addMarker(event: any) {
 
 // Function to edit an existing marker
 export function editMarker(marker: Marker) {
-  if (selectedMarker.value !== undefined && activeGroup.value !== undefined && selectedMarker.value.fk_m_group === activeGroup.value.g_code) {
+  if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value.g_code) {
     // Set the selected marker to the marker being edited
     selectedMarker.value = marker
     // Open the marker drawer

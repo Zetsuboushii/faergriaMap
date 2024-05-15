@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import {onMounted} from 'vue'
-import {getMarkerCeiling, getMarkers, getMarkerTypes, getTerritories} from "@/lib/api/mapData"
+import {activeGroup, getMarkerCeiling, getMarkers, getMarkerTypes, getTerritories} from "@/lib/api/mapData"
 import MarkerInfoDrawer from "@/components/MarkerInfoDrawer.vue"
 import Map from "@/components/map/Map.vue";
 import OptionsOverlay from "@/components/OptionsOverlay.vue";
@@ -14,6 +14,7 @@ import OptionsOverlay from "@/components/OptionsOverlay.vue";
 onMounted(() => {
   getMarkerTypes()
   getTerritories()
+  activeGroup.value.g_code = localStorage.groupCode
   setInterval(() => {
     getMarkers()
     getMarkerCeiling()

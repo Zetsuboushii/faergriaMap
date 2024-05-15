@@ -82,7 +82,6 @@ export interface TerritoryCoord {
 }
 
 export interface Group {
-  g_id: number
   g_code: string
 }
 
@@ -99,8 +98,7 @@ export const currentRegion = ref<string>()
 export const distance = ref<number>(0)
 export const markerCeiling = ref()
 export const activeGroup = ref<Group>({
-  g_id: 3,
-  g_code: "#11111"
+  g_code: "#00000"
 })
 
 // Create reactive flags for various states
@@ -109,12 +107,6 @@ export const markerAdded = ref<boolean>(true)
 export const showAlert = ref<boolean>(false)
 export const territoriesShow = ref<boolean>(true)
 export const isMoveMode = ref<boolean>(false)
-
-/*
-
-  Database queries
-
-*/
 
 // Function to fetch markers from the API and update the markers array
 export async function getMarkers() {
@@ -161,7 +153,6 @@ export async function getGroups() {
     const response = await fetch(API_URL + '/groups')
     const data = await response.json()
     groups.value = data.data.map((group: Group) => ({
-      g_id: group.g_id,
       g_code: group.g_code
     }))
   } catch (error) {
@@ -255,5 +246,11 @@ export async function updateMarker(marker: Marker) {
     const res = await axios.post(API_URL + '/update-marker', marker)
   } catch (err) {
     console.error('Error: ', err)
+  }
+}
+
+export function setGroupStorage() {
+  if (activeGroup.value !== undefined) {
+    localStorage.groupCode = activeGroup.value.g_code
   }
 }
