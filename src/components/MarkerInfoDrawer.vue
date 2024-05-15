@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="selectedMarker && drawerOpened && selectedMarker.m_editable == 1" class="marker-info-drawer">
+  <v-card v-if="selectedMarker && drawerOpened" class="marker-info-drawer">
     <v-icon icon="mdi-close" @click="closeMarker" class="close-btn"></v-icon>
     <v-card-title class="headline">Marker Info</v-card-title>
     <v-card-text>

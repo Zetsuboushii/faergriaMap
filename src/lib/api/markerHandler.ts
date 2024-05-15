@@ -1,13 +1,12 @@
 import {
+  activeGroup,
   destinationMarker,
   distance,
   drawerOpened,
-  getMarkerCeiling,
   isMoveMode,
   Marker,
   markerAdded,
   markerCeiling,
-  putMarker,
   selectedMarker,
   showAlert,
   updateMarker
@@ -16,47 +15,49 @@ import {LatLngExpression} from "leaflet";
 
 // Function to add a new marker to the map
 export function addMarker(event: any) {
-  // Extract the latitude and longitude from the event
-  const latLng = event.latlng
+  if (activeGroup !== undefined) {
+    // Extract the latitude and longitude from the event
+    const latLng = event.latlng
 
-  // Set the selected marker with initial properties
-  selectedMarker.value = {
-    fk_m_type: 2, // Marker type ID
-    fk_mt_region: "faergria", // Region ID
-    m_id: markerCeiling.value.seq + 1, // Unique marker ID
-    m_lat: latLng.lat, // Latitude from event
-    m_lng: latLng.lng, // Longitude from event
-    m_name: "New Marker", // Initial marker name
-    r_id: "faergria", // Region ID
-    r_name: "Faergria", // Region name
-    m_editable: 1, // Editable flag
-    m_type: {
-      mt_id: 2, // Marker type ID
-      mt_name: "Point of Interest", // Marker type name
-      mt_url: "poi", // URL for marker type
-      fk_mt_region: "faergria", // Region ID for marker type
-      mt_size: 40 // Size of the marker
+    // Set the selected marker with initial properties
+    selectedMarker.value = {
+      fk_m_type: 2, // Marker type ID
+      fk_mt_region: "faergria", // Region ID
+      m_id: markerCeiling.value.seq + 1, // Unique marker ID
+      m_lat: latLng.lat, // Latitude from event
+      m_lng: latLng.lng, // Longitude from event
+      m_name: "New Marker", // Initial marker name
+      r_id: "faergria", // Region ID
+      r_name: "Faergria", // Region name
+      fk_m_group: activeGroup.value.g_id, // Group ID
+      m_type: {
+        mt_id: 2, // Marker type ID
+        mt_name: "Point of Interest", // Marker type name
+        mt_url: "poi", // URL for marker type
+        fk_mt_region: "faergria", // Region ID for marker type
+        mt_size: 40 // Size of the marker
+      }
     }
-  }
 
-  // Open the marker drawer
-  drawerOpened.value = true
-  // Set the markerAdded flag to false indicating a new marker is being added
-  markerAdded.value = false
-  // Add the new marker to the database
-  putMarker(selectedMarker.value)
+    // Open the marker drawer
+    drawerOpened.value = true
+    // Set the markerAdded flag to false indicating a new marker is being added
+    markerAdded.value = false
+    // Add the new marker to the database; Only dev function
+    // putMarker(selectedMarker.value)
+  }
 }
 
 // Function to edit an existing marker
 export function editMarker(marker: Marker) {
-  // Set the selected marker to the marker being edited
-  selectedMarker.value = marker
-  // Open the marker drawer
-  drawerOpened.value = true
-  // Set the markerAdded flag to true indicating an existing marker is being edited
-  markerAdded.value = true
-  // Fetch the latest marker ceiling value; Only dev function
-  // getMarkerCeiling()
+  if (selectedMarker.value !== undefined && activeGroup.value !== undefined && selectedMarker.value.fk_m_type === activeGroup.value.g_id) {
+    // Set the selected marker to the marker being edited
+    selectedMarker.value = marker
+    // Open the marker drawer
+    drawerOpened.value = true
+    // Set the markerAdded flag to true indicating an existing marker is being edited
+    markerAdded.value = true
+  }
 }
 
 // Function to calculate the distance between two markers using the Pythagorean theorem

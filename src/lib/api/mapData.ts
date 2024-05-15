@@ -57,7 +57,7 @@ export interface Marker {
   m_name: string
   r_id: string
   r_name: string
-  m_editable: number
+  fk_m_group: number
   m_type: MarkerType
 }
 
@@ -81,10 +81,16 @@ export interface TerritoryCoord {
   c_lng: number
 }
 
+export interface Group {
+  g_id: number
+  g_code: string
+}
+
 // Create reactive arrays for storing markers, marker types, and territories
 export const markers = ref<Marker[]>([])
 export const markerTypes = ref<MarkerType[]>([])
 export const territories = ref<Territory[]>([])
+export const groups = ref<Group[]>([])
 
 // Create reactive variables for dynamic values
 export const selectedMarker = ref<Marker>()
@@ -92,6 +98,10 @@ export const destinationMarker = ref<Marker>()
 export const currentRegion = ref<string>()
 export const distance = ref<number>(0)
 export const markerCeiling = ref()
+export const activeGroup = ref<Group>({
+  g_id: 3,
+  g_code: "#111111"
+})
 
 // Create reactive flags for various states
 export const drawerOpened = ref<boolean>(false)
@@ -111,7 +121,9 @@ export async function getMarkers() {
   try {
     const response = await fetch(API_URL + '/markers')
     const data = await response.json()
-    markers.value = data.data.map((marker: Marker) => ({
+    markers.value = data.data.filter((marker: Marker) =>
+      marker.fk_m_group == 1 || marker.fk_m_group == activeGroup.value.g_id
+    ).map((marker: Marker) => ({
       fk_mt_region: marker.fk_mt_region,
       m_id: marker.m_id,
       m_lat: marker.m_lat,
@@ -119,7 +131,7 @@ export async function getMarkers() {
       m_name: marker.m_name,
       r_id: marker.r_id,
       r_name: marker.r_name,
-      m_editable: marker.m_editable,
+      fk_m_group: marker.fk_m_group,
       m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
   } catch (error) {
@@ -138,6 +150,19 @@ export async function getMarkerTypes() {
       mt_url: markerType.mt_url,
       fk_mt_region: markerType.fk_mt_region,
       mt_size: markerType.mt_size
+    }))
+  } catch (error) {
+    console.error("An error occurred: ", error)
+  }
+}
+
+export async function getGroups() {
+  try {
+    const response = await fetch(API_URL + '/groups')
+    const data = await response.json()
+    groups.value = data.data.map((group: Group) => ({
+      g_id: group.g_id,
+      g_code: group.g_code
     }))
   } catch (error) {
     console.error("An error occurred: ", error)
@@ -201,7 +226,7 @@ export async function putMarker(marker: Marker) {
     fk_m_type: marker.m_type.mt_id,
     m_lat: marker.m_lat,
     m_lng: marker.m_lng,
-    m_editable: marker.m_editable
+    fk_m_group: marker.fk_m_group
   }
 
   try {
