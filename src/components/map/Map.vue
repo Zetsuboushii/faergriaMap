@@ -3,20 +3,25 @@
     <RegionHeader/>
     <l-map
       :useGlobalLeaflet="false"
-      :crs="crs"
-      :minZoom="minZoom"
-      :maxZoom="maxZoom"
-      :maxBounds="maxBounds"
-      :maxBoundsViscosity="maxBoundsViscosity"
-      :center="center"
-      :zoom="zoom"
-      @click="isMoveMode ? moveMarker($event) : addMarker"
+      :crs="map.crs"
+      :minZoom="zoom.minZoom"
+      :maxZoom="zoom.maxZoom"
+      :zoom="zoom.zoom"
+      :maxBounds="bounds.maxBounds"
+      :maxBoundsViscosity="bounds.maxBoundsViscosity"
+      :center="map.center"
+      @click="handleMapClick($event)"
     >
       <l-image-overlay
-        :url="imageUrl"
-        :bounds="imageBounds"
+        :url="image.imageUrl"
+        :bounds="image.imageBounds"
       ></l-image-overlay>
       <PolygonLayer/>
+      <l-polyline
+        v-if="distance > 0"
+        :lat-lngs="getPolylinePoints"
+        :color="'red'"
+      ></l-polyline>
       <MarkerLayer/>
     </l-map>
   </div>
@@ -24,25 +29,20 @@
 
 <script setup lang="ts">
 import {
-  center,
-  crs,
-  imageBounds,
-  imageUrl,
-  isMoveMode,
-  maxBounds,
-  maxBoundsViscosity,
-  maxZoom,
-  minZoom,
-  zoom
+  zoom,
+  map,
+  bounds,
+  image,
+  distance
 } from "@/lib/api/mapData";
-import {addMarker, moveMarker} from "@/lib/api/markerHandler";
+import {getPolylinePoints, handleMapClick} from "@/lib/api/markerHandler";
 import RegionHeader from "@/components/RegionHeader.vue";
-import {LImageOverlay, LMap} from "@vue-leaflet/vue-leaflet";
+import {LImageOverlay, LMap, LPolyline} from "@vue-leaflet/vue-leaflet";
 import PolygonLayer from "@/components/map/PolygonLayer.vue";
 import MarkerLayer from "@/components/map/MarkerLayer.vue";
 </script>
 
 <style scoped>
 @import "leaflet/dist/leaflet.css";
-@import "src/styles/main.css";
+@import "@/styles/main.css";
 </style>

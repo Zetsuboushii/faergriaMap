@@ -108,10 +108,10 @@ app.post('/update-marker', (req, res) => {
   const markerData = req.body
 
   const sql = `
-    update markers set fk_m_type = ?, m_name = ? where m_id = ?
+    update markers set fk_m_type = ?, m_name = ?, m_lat = ?, m_lng = ? where m_id = ?
   `
 
-  const values = [markerData.m_type.mt_id, markerData.m_name, markerData.m_id]
+  const values = [markerData.m_type.mt_id, markerData.m_name, markerData.m_lat, markerData.m_lng, markerData.m_id]
 
   db.run(sql, values, function (err) {
     if (err) {

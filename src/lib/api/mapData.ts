@@ -2,16 +2,39 @@ import {CRS, LatLngBoundsExpression, PointExpression} from "leaflet"
 import {ref} from "vue"
 import axios from "axios"
 
+// Set the API URL based on the environment (development or production)
 export const API_URL = import.meta.env.DEV ? "http://localhost:1338" : ""
-export const crs = CRS.Simple
-export const minZoom = 0
-export const maxZoom = 4
-export const center = ref<PointExpression>([689.66, 689.66])
-export const zoom = ref(1)
-export const maxBounds = ref([[0, 0], [1379.32, 1379.32]])
-export const maxBoundsViscosity = 1.0
-export const imageUrl = 'src/assets/map_iconless.png'
-export const imageBounds = ref<LatLngBoundsExpression>([[0, 0], [1379.32, 1379.32]])
+
+export const map = {
+  // Define the Coordinate Reference System (CRS) as Simple for Leaflet
+  crs: CRS.Simple,
+  // Define the initial center point of the map and bind it to a reactive reference
+  center: [689.66, 689.66] as PointExpression
+}
+
+export const zoom = {
+  // Define the initial zoom level of the map and bind it to a reactive reference
+  zoom: 1,
+  // Define the minimum and maximum zoom levels for the map
+  minZoom: 0,
+  maxZoom: 4
+}
+
+export const bounds = {
+  // Define the bounds of the map and bind it to a reactive reference
+  maxBounds: [[0, 0], [1379.32, 1379.32]],
+  // Define the viscosity of the map bounds
+  maxBoundsViscosity: 1.0
+}
+
+export const image = {
+  // Define the URL of the image to be used as the map overlay
+  imageUrl: "src/assets/map_iconless.png",
+  // Define the bounds of the image overlay and bind it to a reactive reference
+  imageBounds: [[0, 0], [1379.32, 1379.32]] as LatLngBoundsExpression,
+}
+
+// Define a color mapping for different regions
 export const regionColors: { [key: number]: string } = {
   1: "#967bb6",
   3: "#dddd62",
@@ -24,6 +47,7 @@ export const regionColors: { [key: number]: string } = {
   10: "#9b3e22"
 }
 
+// Define interfaces for the data models
 export interface Marker {
   fk_m_type: number
   fk_mt_region: string
@@ -33,7 +57,7 @@ export interface Marker {
   m_name: string
   r_id: string
   r_name: string
-  m_editable: number,
+  m_editable: number
   m_type: MarkerType
 }
 
@@ -57,30 +81,32 @@ export interface TerritoryCoord {
   c_lng: number
 }
 
-// Arrays
+// Create reactive arrays for storing markers, marker types, and territories
 export const markers = ref<Marker[]>([])
 export const markerTypes = ref<MarkerType[]>([])
 export const territories = ref<Territory[]>([])
 
-// Dynamische Werte
+// Create reactive variables for dynamic values
 export const selectedMarker = ref<Marker>()
+export const destinationMarker = ref<Marker>()
 export const currentRegion = ref<string>()
 export const distance = ref<number>(0)
 export const markerCeiling = ref()
 
-// Flags
+// Create reactive flags for various states
 export const drawerOpened = ref<boolean>(false)
 export const markerAdded = ref<boolean>(true)
 export const showAlert = ref<boolean>(false)
 export const territoriesShow = ref<boolean>(true)
 export const isMoveMode = ref<boolean>(false)
 
-
 /*
 
   Database queries
 
- */
+*/
+
+// Function to fetch markers from the API and update the markers array
 export async function getMarkers() {
   try {
     const response = await fetch(API_URL + '/markers')
@@ -97,10 +123,11 @@ export async function getMarkers() {
       m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
   } catch (error) {
-    console.error("Ein Fehler ist aufgetreten: ", error)
+    console.error("An error occurred: ", error)
   }
 }
 
+// Function to fetch marker types from the API and update the markerTypes array
 export async function getMarkerTypes() {
   try {
     const response = await fetch(API_URL + '/marker-types')
@@ -113,20 +140,22 @@ export async function getMarkerTypes() {
       mt_size: markerType.mt_size
     }))
   } catch (error) {
-    console.error("Ein Fehler ist aufgetreten: ", error)
+    console.error("An error occurred: ", error)
   }
 }
 
+// Function to fetch the marker ceiling from the API and update the markerCeiling variable
 export async function getMarkerCeiling() {
   try {
     const response = await fetch(API_URL + '/marker-ceiling')
     const data = await response.json()
     markerCeiling.value = data.data
   } catch (error) {
-    console.error("Ein Fehler ist aufgetreten: ", error)
+    console.error("An error occurred: ", error)
   }
 }
 
+// Function to fetch territories from the API and update the territories array
 export async function getTerritories() {
   try {
     const response = await fetch(API_URL + '/territories')
@@ -141,10 +170,11 @@ export async function getTerritories() {
       })
     }
   } catch (error) {
-    console.error("Ein Fehler ist aufgetreten: ", error)
+    console.error("An error occurred: ", error)
   }
 }
 
+// Function to fetch the coordinates of a specific territory from the API
 export async function getTerritoryCoords(t_id: number) {
   try {
     const response = await fetch(API_URL + '/territory-coords', {
@@ -160,10 +190,11 @@ export async function getTerritoryCoords(t_id: number) {
       c_lng: coord.c_lng
     }))
   } catch (error) {
-    console.error("Ein Fehler ist aufgetreten: ", error)
+    console.error("An error occurred: ", error)
   }
 }
 
+// Function to add a new marker to the database via the API
 export async function putMarker(marker: Marker) {
   const markerData = {
     m_name: marker.m_name,
@@ -181,6 +212,7 @@ export async function putMarker(marker: Marker) {
   }
 }
 
+// Function to delete a marker from the database via the API
 export async function deleteMarker(marker: Marker) {
   const m_id = marker.m_id
   try {
@@ -192,6 +224,7 @@ export async function deleteMarker(marker: Marker) {
   }
 }
 
+// Function to update an existing marker in the database via the API
 export async function updateMarker(marker: Marker) {
   try {
     const res = await axios.post(API_URL + '/update-marker', marker)

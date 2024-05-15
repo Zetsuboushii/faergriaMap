@@ -40,6 +40,7 @@
     <v-card-actions>
       <v-btn v-if="markerAdded" @click="selectedMarker && deleteMarker(selectedMarker)">Delete</v-btn>
       <v-btn v-if="!markerAdded" @click="putMarker(selectedMarker)">Add Marker</v-btn>
+      <v-btn v-if="markerAdded" @click="toggleMoveMode()">Move: {{isMoveMode}}</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -47,14 +48,14 @@
 <script setup lang="ts">
 import {
   deleteMarker,
-  drawerOpened,
+  drawerOpened, isMoveMode,
   markerAdded,
   markerTypes,
   putMarker,
   selectedMarker,
   updateMarker
 } from "@/lib/api/mapData"
-import {closeMarker} from "@/lib/api/markerHandler"
+import {closeMarker, toggleMoveMode} from "@/lib/api/markerHandler"
 </script>
 
 <style scoped>
