@@ -57,7 +57,7 @@ export interface Marker {
   m_name: string
   r_id: string
   r_name: string
-  fk_m_group: number
+  fk_m_group: string
   m_type: MarkerType
 }
 
@@ -100,7 +100,7 @@ export const distance = ref<number>(0)
 export const markerCeiling = ref()
 export const activeGroup = ref<Group>({
   g_id: 3,
-  g_code: "#111111"
+  g_code: "#11111"
 })
 
 // Create reactive flags for various states
@@ -122,7 +122,7 @@ export async function getMarkers() {
     const response = await fetch(API_URL + '/markers')
     const data = await response.json()
     markers.value = data.data.filter((marker: Marker) =>
-      marker.fk_m_group == 1 || marker.fk_m_group == activeGroup.value.g_id
+      marker.fk_m_group === "#00000" || marker.fk_m_group === activeGroup.value.g_code
     ).map((marker: Marker) => ({
       fk_mt_region: marker.fk_mt_region,
       m_id: marker.m_id,

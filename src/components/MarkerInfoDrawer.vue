@@ -19,7 +19,7 @@
             :src="'src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region + '.png'"
             aspect-ratio="1"
             cover
-            @click="selectedMarker.m_type = type; updateMarker(selectedMarker)"
+            @click="updateType(type); updateMarker(selectedMarker)"
           >
             <template v-slot:placeholder>
               <v-row
@@ -55,7 +55,7 @@ import {
   selectedMarker,
   updateMarker
 } from "@/lib/api/mapData"
-import {closeMarker, toggleMoveMode} from "@/lib/api/markerHandler"
+import {closeMarker, toggleMoveMode, updateType} from "@/lib/api/markerHandler"
 </script>
 
 <style scoped>

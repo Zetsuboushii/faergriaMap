@@ -5,25 +5,23 @@
     elevation="2"
     class="map-option-overlay"
   >
-    <v-row dense align="center">
-      <v-col cols="auto">
-        <v-checkbox
-          v-model="territoriesShow"
-          label="Show Regions"
-          class="regionChecker"
-        ></v-checkbox>
-      </v-col>
-      <v-col cols="auto" class="text-right">
-        <div v-if="selectedMarker" class="distance">
-          Distance: {{ distance.toFixed(2) }}km
-        </div>
-      </v-col>
-    </v-row>
+    <v-text-field
+      label="Group Code"
+      v-model="activeGroup.g_code"
+    ></v-text-field>
+    <v-checkbox
+      v-model="territoriesShow"
+      label="Show Regions"
+      class="regionChecker"
+    ></v-checkbox>
+    <div v-if="selectedMarker" class="distance">
+      Distance: {{ distance.toFixed(2) }}km
+    </div>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import {distance, selectedMarker, territoriesShow} from "@/lib/api/mapData";
+import {activeGroup, distance, selectedMarker, territoriesShow} from "@/lib/api/mapData";
 </script>
 
 <style scoped>

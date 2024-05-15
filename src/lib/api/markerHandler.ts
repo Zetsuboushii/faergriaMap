@@ -6,7 +6,7 @@ import {
   isMoveMode,
   Marker,
   markerAdded,
-  markerCeiling,
+  markerCeiling, MarkerType,
   selectedMarker,
   showAlert,
   updateMarker
@@ -29,7 +29,7 @@ export function addMarker(event: any) {
       m_name: "New Marker", // Initial marker name
       r_id: "faergria", // Region ID
       r_name: "Faergria", // Region name
-      fk_m_group: activeGroup.value.g_id, // Group ID
+      fk_m_group: activeGroup.value.g_code, // Group ID
       m_type: {
         mt_id: 2, // Marker type ID
         mt_name: "Point of Interest", // Marker type name
@@ -50,7 +50,7 @@ export function addMarker(event: any) {
 
 // Function to edit an existing marker
 export function editMarker(marker: Marker) {
-  if (selectedMarker.value !== undefined && activeGroup.value !== undefined && selectedMarker.value.fk_m_type === activeGroup.value.g_id) {
+  if (selectedMarker.value !== undefined && activeGroup.value !== undefined && selectedMarker.value.fk_m_group === activeGroup.value.g_code) {
     // Set the selected marker to the marker being edited
     selectedMarker.value = marker
     // Open the marker drawer
@@ -80,7 +80,6 @@ export function handleMarkerContextMenu(event: any, marker: Marker) {
 
 export function getPolylinePoints() {
   if (selectedMarker.value !== undefined && destinationMarker.value !== undefined) {
-    console.log("knechtomann")
     return [
       [selectedMarker.value.m_lat, selectedMarker.value.m_lng] as LatLngExpression,
       [destinationMarker.value.m_lat, destinationMarker.value.m_lng] as LatLngExpression
@@ -123,5 +122,11 @@ export function handleMapClick(event: any) {
     moveMarker(event)
   } else {
     addMarker(event)
+  }
+}
+
+export function updateType(type: MarkerType) {
+  if (selectedMarker.value !== undefined) {
+    selectedMarker.value.m_type = type
   }
 }
