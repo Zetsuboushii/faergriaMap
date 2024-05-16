@@ -27,7 +27,7 @@ app.get('/markers', (req, res) => {
 })
 
 app.get('/marker-types', (req, res) => {
-  const sql = 'select * from marker_types order by fk_mt_region, mt_name'
+  const sql = 'select * from marker_types join main.regions r on marker_types.fk_mt_region = r.r_id order by fk_mt_region, mt_name'
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})

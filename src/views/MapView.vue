@@ -2,8 +2,8 @@
   <RegionHeader v-if="currentRegion && currentRegion"/>
   <Map/>
   <MarkerInfoDrawer/>
-  <OptionsCard/>
   <LegendCard/>
+  <OptionsCard/>
 </template>
 
 <script lang="ts" setup>
