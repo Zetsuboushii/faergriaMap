@@ -69,7 +69,7 @@ app.get('/marker-ceiling', (req, res) => {
 })
 
 app.get('/territories', (req, res) => {
-  const sql = 'select * from territories order by t_id'
+  const sql = 'select * from territories t join regions r on t.fk_t_region = r.r_id order by t.t_id'
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})

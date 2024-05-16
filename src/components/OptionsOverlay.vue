@@ -1,5 +1,4 @@
 <template>
-
   <v-card
     border="start"
     border-color="deep-purple accent-4"
@@ -7,7 +6,6 @@
     class="map-option-overlay d-flex flex-column"
     title="Options"
   >
-    <v-icon icon="mdi-close" @click="closeMarker" class="close-btn"></v-icon>
     <v-text-field
       label="Group Code"
       v-model="activeGroup.g_code"
@@ -23,7 +21,6 @@
 
 <script setup lang="ts">
 import {activeGroup, setGroupStorage, territoriesShow} from "@/lib/api/mapData";
-import {closeMarker} from "@/lib/api/markerHandler";
 </script>
 
 <style scoped>

@@ -16,7 +16,7 @@
           cols="4"
         >
           <v-img
-            :src="'src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region + '.png'"
+            :src="'src/assets/markers/marker_' + type.mt_url + '_' + type.r_url + '.png'"
             aspect-ratio="1"
             cover
             @click="updateType(type); updateMarker(selectedMarker)"
@@ -48,7 +48,8 @@
 <script setup lang="ts">
 import {
   deleteMarker,
-  drawerOpened, isMoveMode,
+  drawerOpened,
+  isMoveMode,
   markerAdded,
   markerTypes,
   putMarker,

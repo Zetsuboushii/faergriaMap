@@ -1,14 +1,16 @@
 import {
-  activeGroup,
+  activeGroup, currentRegion, currentTerritory,
   destinationMarker,
   distance,
   drawerOpened,
   isMoveMode,
   Marker,
   markerAdded,
-  markerCeiling, MarkerType,
+  markerCeiling,
+  MarkerType,
+  putMarker,
   selectedMarker,
-  showAlert,
+  showAlert, Territory,
   updateMarker
 } from "@/lib/api/mapData"
 import {LatLngExpression} from "leaflet";
@@ -21,20 +23,19 @@ export function addMarker(event: any) {
 
     // Set the selected marker with initial properties
     selectedMarker.value = {
-      fk_m_type: 2, // Marker type ID
-      fk_mt_region: "faergria", // Region ID
+      fk_m_type: 2,
       m_id: markerCeiling.value.seq + 1, // Unique marker ID
       m_lat: latLng.lat, // Latitude from event
       m_lng: latLng.lng, // Longitude from event
       m_name: "New Marker", // Initial marker name
-      r_id: "faergria", // Region ID
+      r_url: "faergria", // Region ID
       r_name: "Faergria", // Region name
       fk_m_group: activeGroup.value.g_code, // Group ID
       m_type: {
         mt_id: 2, // Marker type ID
         mt_name: "Point of Interest", // Marker type name
         mt_url: "poi", // URL for marker type
-        fk_mt_region: "faergria", // Region ID for marker type
+        r_url: "faergria", // Region ID for marker type
         mt_size: 40 // Size of the marker
       }
     }
@@ -43,8 +44,8 @@ export function addMarker(event: any) {
     drawerOpened.value = true
     // Set the markerAdded flag to false indicating a new marker is being added
     markerAdded.value = false
-    // Add the new marker to the database; Only dev function
-    // putMarker(selectedMarker.value)
+    // Add the new marker to the database; Dev-only function
+    putMarker(selectedMarker.value)
   }
 }
 
@@ -129,4 +130,9 @@ export function updateType(type: MarkerType) {
   if (selectedMarker.value !== undefined) {
     selectedMarker.value.m_type = type
   }
+}
+
+export function handlePolygonMouseOver(territory: Territory) {
+  currentTerritory.value = territory.t_name
+  currentRegion.value = territory.r_name
 }

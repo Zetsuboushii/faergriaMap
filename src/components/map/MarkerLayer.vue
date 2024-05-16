@@ -8,7 +8,7 @@
   >
     <l-tooltip>{{ marker.m_name }}</l-tooltip>
     <l-icon
-      :icon-url="'src/assets/markers/marker_' + marker.m_type.mt_url + '_' + marker.m_type.fk_mt_region + '.png'"
+      :icon-url="'src/assets/markers/marker_' + marker.m_type.mt_url + '_' + marker.r_url + '.png'"
       :icon-size="[marker.m_type.mt_size, marker.m_type.mt_size]"
     />
   </l-marker>

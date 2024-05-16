@@ -1,32 +1,22 @@
 <template>
   <div v-for="territory in territories" :key="territory.t_id">
-    <!-- TODO -->
     <l-polygon
       v-if="territoriesShow"
-      :lat-lngs="territory.t_coords.map(coord => [coord.c_lat, coord.c_lng])"
+      :lat-lngs="territory.t_coords.map((coord: any) => [coord.c_lat, coord.c_lng])"
       :options="{
-            color: regionColors[territory.fk_t_region],
-            opacity: 1,
-            fillOpacity: 0.2
+            color: regionColors[territory.r_id],
+            opacity: poly.opacity[Number(territoriesShow)],
+            fillOpacity: poly.fillOpacity[Number(territoriesShow)]
           }"
-      @mouseover="currentRegion = territory.t_name"
-    ></l-polygon>
-    <l-polygon
-      v-if="!territoriesShow"
-      :lat-lngs="territory.t_coords.map(coord => [coord.c_lat, coord.c_lng])"
-      :options="{
-            color: regionColors[territory.fk_t_region],
-            opacity: 0,
-            fillOpacity: 0
-          }"
-      @mouseover="currentRegion = territory.t_name"
+      @mouseover="handlePolygonMouseOver(territory)"
     ></l-polygon>
   </div>
 </template>
 
 <script setup lang="ts">
-import {currentRegion, regionColors, territories, territoriesShow} from "@/lib/api/mapData"
+import {poly, regionColors, territories, territoriesShow} from "@/lib/api/mapData"
 import {LPolygon} from "@vue-leaflet/vue-leaflet"
+import {handlePolygonMouseOver} from "@/lib/api/markerHandler";
 </script>
 
 <style scoped>

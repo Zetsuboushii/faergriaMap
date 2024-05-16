@@ -1,4 +1,5 @@
 <template>
+  <RegionHeader v-if="currentRegion && currentRegion"/>
   <Map/>
   <MarkerInfoDrawer/>
   <OptionsOverlay/>
@@ -6,10 +7,18 @@
 
 <script lang="ts" setup>
 import {onMounted} from 'vue'
-import {activeGroup, getMarkerCeiling, getMarkers, getMarkerTypes, getTerritories} from "@/lib/api/mapData"
+import {
+  activeGroup,
+  currentRegion,
+  getMarkerCeiling,
+  getMarkers,
+  getMarkerTypes,
+  getTerritories
+} from "@/lib/api/mapData"
 import MarkerInfoDrawer from "@/components/MarkerInfoDrawer.vue"
 import Map from "@/components/map/Map.vue";
 import OptionsOverlay from "@/components/OptionsOverlay.vue";
+import RegionHeader from "@/components/RegionHeader.vue";
 
 onMounted(() => {
   getMarkerTypes()
