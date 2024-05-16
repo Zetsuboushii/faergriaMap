@@ -2,7 +2,7 @@
   <div class="region-header">
     <v-row class="fill-height" align="center">
       <v-col>
-        <span class="region-header-text text-h4">{{ currentTerritory + " - " + currentRegion }}</span>
+        <span class="region-header-text text-h4">{{ currentTerritory }}</span>
       </v-col>
     </v-row>
   </div>

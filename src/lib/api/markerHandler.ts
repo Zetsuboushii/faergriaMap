@@ -45,7 +45,7 @@ export function addMarker(event: any) {
     // Set the markerAdded flag to false indicating a new marker is being added
     markerAdded.value = false
     // Add the new marker to the database; Dev-only function
-    putMarker(selectedMarker.value)
+    // putMarker(selectedMarker.value)
   }
 }
 
