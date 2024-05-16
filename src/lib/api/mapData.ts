@@ -86,6 +86,12 @@ export interface TerritoryCoord {
   c_lng: number
 }
 
+export interface Region {
+  r_id: number
+  r_url: string
+  r_name: string
+}
+
 export interface Group {
   g_code: string
 }
@@ -95,6 +101,7 @@ export const markers = ref<Marker[]>([])
 export const markerTypes = ref<MarkerType[]>([])
 export const territories = ref<Territory[]>([])
 export const groups = ref<Group[]>([])
+export const regions = ref<Region[]>([])
 
 // Create reactive variables for dynamic values
 export const selectedMarker = ref<Marker>()
@@ -113,6 +120,7 @@ export const markerAdded = ref<boolean>(true)
 export const showAlert = ref<boolean>(false)
 export const territoriesShow = ref<boolean>(true)
 export const isMoveMode = ref<boolean>(false)
+export const showOptions = ref<boolean>(false)
 
 // Function to fetch markers from the API and update the markers array
 export async function getMarkers() {
@@ -210,6 +218,20 @@ export async function getTerritoryCoords(t_id: number) {
     return data.data.map((coord: TerritoryCoord) => ({
       c_lat: coord.c_lat,
       c_lng: coord.c_lng
+    }))
+  } catch (error) {
+    console.error("An error occurred: ", error)
+  }
+}
+
+export async function getRegions() {
+  try {
+    const response = await fetch(API_URL + '/regions')
+    const data = await response.json()
+    regions.value = data.data.map((region: Region) => ({
+      r_id: region.r_id,
+      r_url: region.r_url,
+      r_name: region.r_name
     }))
   } catch (error) {
     console.error("An error occurred: ", error)

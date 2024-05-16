@@ -2,7 +2,8 @@
   <RegionHeader v-if="currentRegion && currentRegion"/>
   <Map/>
   <MarkerInfoDrawer/>
-  <OptionsOverlay/>
+  <OptionsCard/>
+  <LegendCard/>
 </template>
 
 <script lang="ts" setup>
@@ -12,17 +13,19 @@ import {
   currentRegion,
   getMarkerCeiling,
   getMarkers,
-  getMarkerTypes,
+  getMarkerTypes, getRegions,
   getTerritories
 } from "@/lib/api/mapData"
 import MarkerInfoDrawer from "@/components/MarkerInfoDrawer.vue"
 import Map from "@/components/map/Map.vue";
-import OptionsOverlay from "@/components/OptionsOverlay.vue";
 import RegionHeader from "@/components/RegionHeader.vue";
+import OptionsCard from "@/components/OptionsCard.vue";
+import LegendCard from "@/components/LegendCard.vue";
 
 onMounted(() => {
   getMarkerTypes()
   getTerritories()
+  getRegions()
   activeGroup.value.g_code = localStorage.groupCode
   setInterval(() => {
     getMarkers()
