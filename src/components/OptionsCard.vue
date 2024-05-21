@@ -8,7 +8,7 @@
       <div v-if="showOptions">
         <v-text-field
           label="Group Code"
-          v-model="activeGroup.g_code"
+          v-model="activeGroup"
           @change="setGroupStorage"
         ></v-text-field>
         <v-checkbox

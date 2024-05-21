@@ -2,7 +2,7 @@ import {
   activeGroup, currentRegion, currentTerritory,
   destinationMarker,
   distance,
-  drawerOpened,
+  drawerOpened, groups,
   isMoveMode,
   Marker,
   markerAdded,
@@ -17,7 +17,7 @@ import {LatLngExpression} from "leaflet";
 
 // Function to add a new marker to the map
 export function addMarker(event: any) {
-  if (activeGroup.value.g_code.includes('#') && activeGroup.value.g_code.length === 6) {
+  if (activeGroup.value.includes('#') && activeGroup.value.length === 6 && groups.value.includes(activeGroup.value)) {
     // Extract the latitude and longitude from the event
     const latLng = event.latlng
 
@@ -30,7 +30,7 @@ export function addMarker(event: any) {
       m_name: "New Marker", // Initial marker name
       r_url: "faergria", // Region ID
       r_name: "Faergria", // Region name
-      fk_m_group: activeGroup.value.g_code, // Group ID
+      fk_m_group: activeGroup.value, // Group ID
       m_type: {
         mt_id: 2, // Marker type ID
         mt_name: "Point of Interest", // Marker type name
@@ -51,7 +51,7 @@ export function addMarker(event: any) {
 
 // Function to edit an existing marker
 export function editMarker(marker: Marker) {
-  if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value.g_code) {
+  if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
     // Set the selected marker to the marker being edited
     selectedMarker.value = marker
     // Open the marker drawer

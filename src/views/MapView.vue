@@ -26,7 +26,7 @@ onMounted(() => {
   getMarkerTypes()
   getTerritories()
   getRegions()
-  activeGroup.value.g_code = localStorage.groupCode
+  activeGroup.value = localStorage.groupCode
   setInterval(() => {
     getMarkers()
     getMarkerCeiling()

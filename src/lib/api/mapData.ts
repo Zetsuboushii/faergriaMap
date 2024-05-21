@@ -16,7 +16,7 @@ export const zoom = {
   // Define the initial zoom level of the map and bind it to a reactive reference
   zoom: 1,
   // Define the minimum and maximum zoom levels for the map
-  minZoom: 0,
+  minZoom: -1,
   maxZoom: 4
 }
 
@@ -92,15 +92,11 @@ export interface Region {
   r_name: string
 }
 
-export interface Group {
-  g_code: string
-}
-
 // Create reactive arrays for storing markers, marker types, and territories
 export const markers = ref<Marker[]>([])
 export const markerTypes = ref<MarkerType[]>([])
 export const territories = ref<Territory[]>([])
-export const groups = ref<Group[]>([])
+export const groups = ref<string[]>([])
 export const regions = ref<Region[]>([])
 
 // Create reactive variables for dynamic values
@@ -109,9 +105,7 @@ export const destinationMarker = ref<Marker>()
 export const currentTerritory = ref<string>()
 export const distance = ref<number>(0)
 export const markerCeiling = ref()
-export const activeGroup = ref<Group>({
-  g_code: "#00000"
-})
+export const activeGroup = ref<string>("#00000")
 export const currentRegion = ref<string>()
 
 // Create reactive flags for various states
@@ -128,7 +122,7 @@ export async function getMarkers() {
     const response = await fetch(API_URL + '/markers')
     const data = await response.json()
     markers.value = data.data.filter((marker: Marker) =>
-      marker.fk_m_group === "#00000" || marker.fk_m_group === activeGroup.value.g_code
+      marker.fk_m_group === "#00000" || marker.fk_m_group === activeGroup.value
     ).map((marker: Marker) => ({
       m_id: marker.m_id,
       m_lat: marker.m_lat,
@@ -165,9 +159,7 @@ export async function getGroups() {
   try {
     const response = await fetch(API_URL + '/groups')
     const data = await response.json()
-    groups.value = data.data.map((group: Group) => ({
-      g_code: group.g_code
-    }))
+    groups.value = data.data
   } catch (error) {
     console.error("An error occurred: ", error)
   }
@@ -279,6 +271,6 @@ export async function updateMarker(marker: Marker) {
 
 export function setGroupStorage() {
   if (activeGroup.value !== undefined) {
-    localStorage.groupCode = activeGroup.value.g_code
+    localStorage.groupCode = activeGroup.value
   }
 }
