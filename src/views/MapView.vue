@@ -1,5 +1,5 @@
 <template>
-  <RegionHeader v-if="currentRegion && currentRegion"/>
+  <RegionHeader v-if="currentRegion && territoriesShow"/>
   <Map/>
   <MarkerInfoDrawer/>
   <LegendCard/>
@@ -14,7 +14,7 @@ import {
   getMarkerCeiling,
   getMarkers,
   getMarkerTypes, getRegions,
-  getTerritories
+  getTerritories, territoriesShow
 } from "@/lib/api/mapData"
 import MarkerInfoDrawer from "@/components/MarkerInfoDrawer.vue"
 import Map from "@/components/map/Map.vue";
@@ -33,7 +33,3 @@ onMounted(() => {
   }, 500)
 })
 </script>
-
-<style scoped>
-@import "src/styles/main.css";
-</style>

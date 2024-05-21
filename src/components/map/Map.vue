@@ -37,5 +37,10 @@ import MarkerLayer from "@/components/map/MarkerLayer.vue";
 
 <style scoped>
 @import "leaflet/dist/leaflet.css";
-@import "@/styles/main.css";
+
+.map-container {
+  height: 100vh;
+  width: 100%;
+  z-index: 1;
+}
 </style>

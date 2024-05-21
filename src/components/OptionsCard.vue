@@ -26,5 +26,27 @@ import {activeGroup, setGroupStorage, showOptions, territoriesShow} from "@/lib/
 </script>
 
 <style>
-@import "src/styles/main.css";
+.map-option-card {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 5px;
+  z-index: 1002;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  max-height: 60px;
+  width: auto;
+}
+
+.map-option-wrapper {
+  position: relative;
+  max-height: 60px;
+}
+
+.map-option-wrapper:hover .map-option-card {
+  max-height: 500px;
+}
 </style>

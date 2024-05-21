@@ -60,5 +60,26 @@ import {closeMarker, toggleMoveMode, updateType} from "@/lib/api/markerHandler"
 </script>
 
 <style scoped>
-@import "src/styles/main.css";
+.marker-info-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10%;
+  min-width: 300px;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.marker-icon-grid {
+  height: 50vh;
+  overflow-y: scroll;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 </style>

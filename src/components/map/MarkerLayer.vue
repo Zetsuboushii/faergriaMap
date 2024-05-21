@@ -19,7 +19,3 @@ import {markers} from "@/lib/api/mapData"
 import {editMarker, handleMarkerContextMenu} from "@/lib/api/markerHandler"
 import {LIcon, LMarker, LTooltip} from "@vue-leaflet/vue-leaflet"
 </script>
-
-<style scoped>
-@import "src/styles/main.css";
-</style>

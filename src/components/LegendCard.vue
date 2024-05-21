@@ -15,5 +15,37 @@ import {regionColors, regions} from "@/lib/api/mapData";
 </script>
 
 <style scoped>
-@import "src/styles/main.css";
+.color-legend {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  max-width: 200px;
+  height: 500px;
+  z-index: 1001;
+  overflow-y: scroll;
+}
+
+.color-legend-title {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+  border-bottom: 1px solid #ddd;
+}
+
+.legend-item {
+  display: flow;
+  margin-bottom: 8px;
+}
+
+.region-color-box {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid #000;
+}
+
+.region-label {
+  font-size: 14px;
+}
 </style>

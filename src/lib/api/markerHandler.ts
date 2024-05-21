@@ -1,23 +1,28 @@
 import {
-  activeGroup, currentRegion, currentTerritory,
+  activeGroup,
+  currentRegion,
+  currentTerritory,
   destinationMarker,
   distance,
-  drawerOpened, groups,
+  drawerOpened,
   isMoveMode,
   Marker,
   markerAdded,
   markerCeiling,
   MarkerType,
-  putMarker,
+  poly,
+  regionColors,
   selectedMarker,
-  showAlert, Territory,
+  showAlert,
+  territoriesShow,
+  Territory,
   updateMarker
 } from "@/lib/api/mapData"
 import {LatLngExpression} from "leaflet";
 
 // Function to add a new marker to the map
 export function addMarker(event: any) {
-  if (activeGroup.value.includes('#') && activeGroup.value.length === 6 && groups.value.includes(activeGroup.value)) {
+  if (activeGroup.value.includes('#') && activeGroup.value.length === 6) {
     // Extract the latitude and longitude from the event
     const latLng = event.latlng
 

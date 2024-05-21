@@ -1,7 +1,6 @@
 <template>
   <div v-for="territory in territories" :key="territory.t_id">
     <l-polygon
-      v-if="territoriesShow"
       :lat-lngs="territory.t_coords.map((coord: any) => [coord.c_lat, coord.c_lng])"
       :options="{
             color: regionColors[territory.r_id],
@@ -9,7 +8,9 @@
             fillOpacity: poly.fillOpacity[Number(territoriesShow)]
           }"
       @mouseover="handlePolygonMouseOver(territory)"
-    ></l-polygon>
+      :visible="territoriesShow"
+    >
+    </l-polygon>
   </div>
 </template>
 
@@ -20,5 +21,7 @@ import {handlePolygonMouseOver} from "@/lib/api/markerHandler";
 </script>
 
 <style scoped>
-@import "src/styles/main.css";
+.knecht {
+  visibility: hidden;
+}
 </style>

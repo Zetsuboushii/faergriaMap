@@ -36,7 +36,7 @@ export const image = {
 
 export const poly = {
   opacity: [0, 1],
-  fillOpacity: [0, 0.2]
+  fillOpacity: [0, 0.125]
 }
 
 // Define a color mapping for different regions
