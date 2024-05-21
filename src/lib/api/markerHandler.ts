@@ -17,7 +17,7 @@ import {LatLngExpression} from "leaflet";
 
 // Function to add a new marker to the map
 export function addMarker(event: any) {
-  if (activeGroup !== undefined) {
+  if (activeGroup.value.g_code.includes('#') && activeGroup.value.g_code.length === 6) {
     // Extract the latitude and longitude from the event
     const latLng = event.latlng
 
