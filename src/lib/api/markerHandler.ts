@@ -1,62 +1,69 @@
 import {
+  activeGroup,
+  currentRegion,
+  currentTerritory,
   destinationMarker,
   distance,
   drawerOpened,
-  getMarkerCeiling,
   isMoveMode,
   Marker,
   markerAdded,
   markerCeiling,
-  putMarker,
+  MarkerType,
+  poly,
+  regionColors,
   selectedMarker,
   showAlert,
+  territoriesShow,
+  Territory,
   updateMarker
 } from "@/lib/api/mapData"
 import {LatLngExpression} from "leaflet";
 
 // Function to add a new marker to the map
 export function addMarker(event: any) {
-  // Extract the latitude and longitude from the event
-  const latLng = event.latlng
+  if (activeGroup.value.includes('#') && activeGroup.value.length === 6) {
+    // Extract the latitude and longitude from the event
+    const latLng = event.latlng
 
-  // Set the selected marker with initial properties
-  selectedMarker.value = {
-    fk_m_type: 2, // Marker type ID
-    fk_mt_region: "faergria", // Region ID
-    m_id: markerCeiling.value.seq + 1, // Unique marker ID
-    m_lat: latLng.lat, // Latitude from event
-    m_lng: latLng.lng, // Longitude from event
-    m_name: "New Marker", // Initial marker name
-    r_id: "faergria", // Region ID
-    r_name: "Faergria", // Region name
-    m_editable: 1, // Editable flag
-    m_type: {
-      mt_id: 2, // Marker type ID
-      mt_name: "Point of Interest", // Marker type name
-      mt_url: "poi", // URL for marker type
-      fk_mt_region: "faergria", // Region ID for marker type
-      mt_size: 40 // Size of the marker
+    // Set the selected marker with initial properties
+    selectedMarker.value = {
+      fk_m_type: 2,
+      m_id: markerCeiling.value.seq + 1, // Unique marker ID
+      m_lat: latLng.lat, // Latitude from event
+      m_lng: latLng.lng, // Longitude from event
+      m_name: "New Marker", // Initial marker name
+      r_url: "faergria", // Region ID
+      r_name: "Faergria", // Region name
+      fk_m_group: activeGroup.value, // Group ID
+      m_type: {
+        mt_id: 2, // Marker type ID
+        mt_name: "Point of Interest", // Marker type name
+        mt_url: "poi", // URL for marker type
+        r_url: "faergria", // Region ID for marker type
+        mt_size: 40 // Size of the marker
+      }
     }
-  }
 
-  // Open the marker drawer
-  drawerOpened.value = true
-  // Set the markerAdded flag to false indicating a new marker is being added
-  markerAdded.value = false
-  // Add the new marker to the database
-  putMarker(selectedMarker.value)
+    // Open the marker drawer
+    drawerOpened.value = true
+    // Set the markerAdded flag to false indicating a new marker is being added
+    markerAdded.value = false
+    // Add the new marker to the database; Dev-only function
+    // putMarker(selectedMarker.value)
+  }
 }
 
 // Function to edit an existing marker
 export function editMarker(marker: Marker) {
-  // Set the selected marker to the marker being edited
-  selectedMarker.value = marker
-  // Open the marker drawer
-  drawerOpened.value = true
-  // Set the markerAdded flag to true indicating an existing marker is being edited
-  markerAdded.value = true
-  // Fetch the latest marker ceiling value; Only dev function
-  // getMarkerCeiling()
+  if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
+    // Set the selected marker to the marker being edited
+    selectedMarker.value = marker
+    // Open the marker drawer
+    drawerOpened.value = true
+    // Set the markerAdded flag to true indicating an existing marker is being edited
+    markerAdded.value = true
+  }
 }
 
 // Function to calculate the distance between two markers using the Pythagorean theorem
@@ -79,7 +86,6 @@ export function handleMarkerContextMenu(event: any, marker: Marker) {
 
 export function getPolylinePoints() {
   if (selectedMarker.value !== undefined && destinationMarker.value !== undefined) {
-    console.log("knechtomann")
     return [
       [selectedMarker.value.m_lat, selectedMarker.value.m_lng] as LatLngExpression,
       [destinationMarker.value.m_lat, destinationMarker.value.m_lng] as LatLngExpression
@@ -123,4 +129,15 @@ export function handleMapClick(event: any) {
   } else {
     addMarker(event)
   }
+}
+
+export function updateType(type: MarkerType) {
+  if (selectedMarker.value !== undefined) {
+    selectedMarker.value.m_type = type
+  }
+}
+
+export function handlePolygonMouseOver(territory: Territory) {
+  currentTerritory.value = territory.t_name
+  currentRegion.value = territory.r_name
 }

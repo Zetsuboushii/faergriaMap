@@ -1,6 +1,5 @@
 <template>
   <div class="map-container">
-    <RegionHeader/>
     <l-map
       :useGlobalLeaflet="false"
       :crs="map.crs"
@@ -28,13 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  zoom,
-  map,
-  bounds,
-  image,
-  distance
-} from "@/lib/api/mapData";
+import {bounds, distance, image, map, zoom} from "@/lib/api/mapData";
 import {getPolylinePoints, handleMapClick} from "@/lib/api/markerHandler";
 import RegionHeader from "@/components/RegionHeader.vue";
 import {LImageOverlay, LMap, LPolyline} from "@vue-leaflet/vue-leaflet";
@@ -44,5 +37,10 @@ import MarkerLayer from "@/components/map/MarkerLayer.vue";
 
 <style scoped>
 @import "leaflet/dist/leaflet.css";
-@import "@/styles/main.css";
+
+.map-container {
+  height: 100vh;
+  width: 100%;
+  z-index: 1;
+}
 </style>

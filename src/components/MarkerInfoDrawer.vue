@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="selectedMarker && drawerOpened && selectedMarker.m_editable == 1" class="marker-info-drawer">
+  <v-card v-if="selectedMarker && drawerOpened" class="marker-info-drawer">
     <v-icon icon="mdi-close" @click="closeMarker" class="close-btn"></v-icon>
     <v-card-title class="headline">Marker Info</v-card-title>
     <v-card-text>
@@ -16,10 +16,10 @@
           cols="4"
         >
           <v-img
-            :src="'src/assets/markers/marker_' + type.mt_url + '_' + type.fk_mt_region + '.png'"
+            :src="'src/assets/markers/marker_' + type.mt_url + '_' + type.r_url + '.png'"
             aspect-ratio="1"
             cover
-            @click="selectedMarker.m_type = type; updateMarker(selectedMarker)"
+            @click="updateType(type); updateMarker(selectedMarker)"
           >
             <template v-slot:placeholder>
               <v-row
@@ -48,16 +48,38 @@
 <script setup lang="ts">
 import {
   deleteMarker,
-  drawerOpened, isMoveMode,
+  drawerOpened,
+  isMoveMode,
   markerAdded,
   markerTypes,
   putMarker,
   selectedMarker,
   updateMarker
 } from "@/lib/api/mapData"
-import {closeMarker, toggleMoveMode} from "@/lib/api/markerHandler"
+import {closeMarker, toggleMoveMode, updateType} from "@/lib/api/markerHandler"
 </script>
 
 <style scoped>
-@import "src/styles/main.css";
+.marker-info-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10%;
+  min-width: 300px;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.marker-icon-grid {
+  height: 50vh;
+  overflow-y: scroll;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 </style>

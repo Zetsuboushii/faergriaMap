@@ -16,7 +16,7 @@ export const zoom = {
   // Define the initial zoom level of the map and bind it to a reactive reference
   zoom: 1,
   // Define the minimum and maximum zoom levels for the map
-  minZoom: 0,
+  minZoom: -1,
   maxZoom: 4
 }
 
@@ -32,6 +32,11 @@ export const image = {
   imageUrl: "src/assets/map_iconless.png",
   // Define the bounds of the image overlay and bind it to a reactive reference
   imageBounds: [[0, 0], [1379.32, 1379.32]] as LatLngBoundsExpression,
+}
+
+export const poly = {
+  opacity: [0, 1],
+  fillOpacity: [0, 0.125]
 }
 
 // Define a color mapping for different regions
@@ -50,14 +55,13 @@ export const regionColors: { [key: number]: string } = {
 // Define interfaces for the data models
 export interface Marker {
   fk_m_type: number
-  fk_mt_region: string
   m_id: number
   m_lat: number
   m_lng: number
   m_name: string
-  r_id: string
+  r_url: string
   r_name: string
-  m_editable: number
+  fk_m_group: string
   m_type: MarkerType
 }
 
@@ -65,14 +69,15 @@ export interface MarkerType {
   mt_id: number
   mt_name: string
   mt_url: string
-  fk_mt_region: string
+  r_url: string
   mt_size: number
 }
 
 export interface Territory {
   t_id: number
   t_name: string
-  fk_t_region: number
+  r_id: number
+  r_name: string
   t_coords: TerritoryCoord[]
 }
 
@@ -81,17 +86,27 @@ export interface TerritoryCoord {
   c_lng: number
 }
 
+export interface Region {
+  r_id: number
+  r_url: string
+  r_name: string
+}
+
 // Create reactive arrays for storing markers, marker types, and territories
 export const markers = ref<Marker[]>([])
 export const markerTypes = ref<MarkerType[]>([])
 export const territories = ref<Territory[]>([])
+export const groups = ref<string[]>([])
+export const regions = ref<Region[]>([])
 
 // Create reactive variables for dynamic values
 export const selectedMarker = ref<Marker>()
 export const destinationMarker = ref<Marker>()
-export const currentRegion = ref<string>()
+export const currentTerritory = ref<string>()
 export const distance = ref<number>(0)
 export const markerCeiling = ref()
+export const activeGroup = ref<string>("#00000")
+export const currentRegion = ref<string>()
 
 // Create reactive flags for various states
 export const drawerOpened = ref<boolean>(false)
@@ -99,27 +114,23 @@ export const markerAdded = ref<boolean>(true)
 export const showAlert = ref<boolean>(false)
 export const territoriesShow = ref<boolean>(true)
 export const isMoveMode = ref<boolean>(false)
-
-/*
-
-  Database queries
-
-*/
+export const showOptions = ref<boolean>(false)
 
 // Function to fetch markers from the API and update the markers array
 export async function getMarkers() {
   try {
     const response = await fetch(API_URL + '/markers')
     const data = await response.json()
-    markers.value = data.data.map((marker: Marker) => ({
-      fk_mt_region: marker.fk_mt_region,
+    markers.value = data.data.filter((marker: Marker) =>
+      marker.fk_m_group === "#00000" || marker.fk_m_group === activeGroup.value
+    ).map((marker: Marker) => ({
       m_id: marker.m_id,
       m_lat: marker.m_lat,
       m_lng: marker.m_lng,
       m_name: marker.m_name,
-      r_id: marker.r_id,
+      r_url: marker.r_url,
       r_name: marker.r_name,
-      m_editable: marker.m_editable,
+      fk_m_group: marker.fk_m_group,
       m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
   } catch (error) {
@@ -136,9 +147,19 @@ export async function getMarkerTypes() {
       mt_id: markerType.mt_id,
       mt_name: markerType.mt_name,
       mt_url: markerType.mt_url,
-      fk_mt_region: markerType.fk_mt_region,
+      r_url: markerType.r_url,
       mt_size: markerType.mt_size
     }))
+  } catch (error) {
+    console.error("An error occurred: ", error)
+  }
+}
+
+export async function getGroups() {
+  try {
+    const response = await fetch(API_URL + '/groups')
+    const data = await response.json()
+    groups.value = data.data
   } catch (error) {
     console.error("An error occurred: ", error)
   }
@@ -165,7 +186,8 @@ export async function getTerritories() {
       territories.value.push({
         t_id: territory.t_id,
         t_name: territory.t_name,
-        fk_t_region: territory.fk_t_region,
+        r_id: territory.r_id,
+        r_name: territory.r_name,
         t_coords: coords
       })
     }
@@ -194,6 +216,20 @@ export async function getTerritoryCoords(t_id: number) {
   }
 }
 
+export async function getRegions() {
+  try {
+    const response = await fetch(API_URL + '/regions')
+    const data = await response.json()
+    regions.value = data.data.map((region: Region) => ({
+      r_id: region.r_id,
+      r_url: region.r_url,
+      r_name: region.r_name
+    }))
+  } catch (error) {
+    console.error("An error occurred: ", error)
+  }
+}
+
 // Function to add a new marker to the database via the API
 export async function putMarker(marker: Marker) {
   const markerData = {
@@ -201,7 +237,7 @@ export async function putMarker(marker: Marker) {
     fk_m_type: marker.m_type.mt_id,
     m_lat: marker.m_lat,
     m_lng: marker.m_lng,
-    m_editable: marker.m_editable
+    fk_m_group: marker.fk_m_group
   }
 
   try {
@@ -230,5 +266,11 @@ export async function updateMarker(marker: Marker) {
     const res = await axios.post(API_URL + '/update-marker', marker)
   } catch (err) {
     console.error('Error: ', err)
+  }
+}
+
+export function setGroupStorage() {
+  if (activeGroup.value !== undefined) {
+    localStorage.groupCode = activeGroup.value
   }
 }

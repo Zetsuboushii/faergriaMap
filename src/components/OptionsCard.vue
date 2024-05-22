@@ -1,0 +1,52 @@
+<template>
+  <div class="map-option-wrapper" @mouseover="showOptions = true" @mouseleave="showOptions = false">
+    <v-card
+      elevation="2"
+      class="map-option-card d-flex flex-column"
+      title="Options"
+    >
+      <div v-if="showOptions">
+        <v-text-field
+          label="Group Code"
+          v-model="activeGroup"
+          @change="setGroupStorage"
+        ></v-text-field>
+        <v-checkbox
+          v-model="territoriesShow"
+          label="Show Regions"
+          class="region-checker"
+        ></v-checkbox>
+      </div>
+    </v-card>
+  </div>
+</template>
+
+<script setup lang="ts">
+import {activeGroup, setGroupStorage, showOptions, territoriesShow} from "@/lib/api/mapData";
+</script>
+
+<style>
+.map-option-card {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 5px;
+  z-index: 1002;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  max-height: 60px;
+  width: auto;
+}
+
+.map-option-wrapper {
+  position: relative;
+  max-height: 60px;
+}
+
+.map-option-wrapper:hover .map-option-card {
+  max-height: 500px;
+}
+</style>

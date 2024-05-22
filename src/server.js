@@ -13,7 +13,7 @@ const db = new sqlite3.Database('./src/db.sqlite', sqlite3.OPEN_READWRITE, (err)
 })
 
 app.get('/markers', (req, res) => {
-  const sql = 'select * from markers m join marker_types mt on m.fk_m_type = mt.mt_id join main.regions r on r.r_id = mt.fk_mt_region'
+  const sql = 'select * from markers m join marker_types mt on m.fk_m_type = mt.mt_id join regions r on r.r_id = mt.fk_mt_region join groups g on m.fk_m_group = g.g_code order by mt.mt_name desc'
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})
@@ -27,7 +27,21 @@ app.get('/markers', (req, res) => {
 })
 
 app.get('/marker-types', (req, res) => {
-  const sql = 'select * from marker_types order by fk_mt_region, mt_name'
+  const sql = 'select * from marker_types join main.regions r on marker_types.fk_mt_region = r.r_id order by fk_mt_region, mt_name'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
+})
+
+app.get('/groups', (req, res) => {
+  const sql = 'select * from groups'
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})
@@ -55,7 +69,7 @@ app.get('/marker-ceiling', (req, res) => {
 })
 
 app.get('/territories', (req, res) => {
-  const sql = 'select * from territories order by t_id'
+  const sql = 'select * from territories t join regions r on t.fk_t_region = r.r_id order by t.t_id'
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(400).json({error: err.message})
@@ -83,15 +97,29 @@ app.post('/territory-coords', (req, res) => {
   })
 })
 
+app.get('/regions', (req, res) => {
+  const sql = 'select * from regions'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
+})
+
 app.post('/put-marker', (req, res) => {
   const markerData = req.body
 
   const sql = `
-    insert into markers (m_name, fk_m_type, m_lat, m_lng, m_editable)
+    insert into markers (m_name, fk_m_type, m_lat, m_lng, fk_m_group)
     values (?, ?, ?, ?, ?);
   `
 
-  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng, markerData.m_editable]
+  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng, markerData.fk_m_group]
 
   db.run(sql, values, function (err) {
     if (err) {
