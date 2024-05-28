@@ -56,7 +56,7 @@ import {
   selectedMarker,
   updateMarker
 } from "@/lib/api/mapData"
-import {closeMarker, toggleMoveMode, updateType} from "@/lib/api/markerHandler"
+import {closeMarker, toggleMoveMode, updateType} from "@/lib/api/eventHandler"
 </script>
 
 <style scoped>

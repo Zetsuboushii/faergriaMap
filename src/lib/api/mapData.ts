@@ -1,4 +1,4 @@
-import {CRS, LatLngBoundsExpression, PointExpression} from "leaflet"
+import {CRS, LatLngBoundsExpression, LatLngExpression, PointExpression} from "leaflet"
 import {ref} from "vue"
 import axios from "axios"
 
@@ -107,6 +107,8 @@ export const distance = ref<number>(0)
 export const markerCeiling = ref()
 export const activeGroup = ref<string>("#00000")
 export const currentRegion = ref<string>()
+export const polyLineLatLngs = ref<LatLngExpression[]>([[100,100],[200,200]])
+export const polyLineCenter = ref<LatLngExpression>()
 
 // Create reactive flags for various states
 export const drawerOpened = ref<boolean>(false)
@@ -270,7 +272,9 @@ export async function updateMarker(marker: Marker) {
 }
 
 export function setGroupStorage() {
+  console.log(activeGroup.value)
   if (activeGroup.value !== undefined) {
     localStorage.groupCode = activeGroup.value
+    console.log(localStorage.groupCode)
   }
 }
