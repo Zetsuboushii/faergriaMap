@@ -1,6 +1,7 @@
 <template>
   <div class="map-container">
     <l-map
+      ref="mapRef"
       :useGlobalLeaflet="false"
       :crs="map.crs"
       :minZoom="zoom.minZoom"
@@ -9,18 +10,15 @@
       :maxBounds="bounds.maxBounds"
       :maxBoundsViscosity="bounds.maxBoundsViscosity"
       :center="map.center"
-      @click="handleMapClick($event)"
+      @click="handleMapClick"
+      @keydown="handleKeyDown"
     >
       <l-image-overlay
         :url="image.imageUrl"
         :bounds="image.imageBounds"
       ></l-image-overlay>
       <PolygonLayer/>
-      <l-polyline
-        v-if="distance > 0"
-        :lat-lngs="getPolylinePoints"
-        :color="'red'"
-      ></l-polyline>
+      <PolylineLayer v-if="distance"/>
       <MarkerLayer/>
     </l-map>
   </div>
@@ -28,11 +26,11 @@
 
 <script setup lang="ts">
 import {bounds, distance, image, map, zoom} from "@/lib/api/mapData";
-import {getPolylinePoints, handleMapClick} from "@/lib/api/markerHandler";
-import RegionHeader from "@/components/RegionHeader.vue";
-import {LImageOverlay, LMap, LPolyline} from "@vue-leaflet/vue-leaflet";
+import {handleKeyDown, handleMapClick} from "@/lib/api/eventHandler";
+import { LImageOverlay, LMap } from "@vue-leaflet/vue-leaflet";
 import PolygonLayer from "@/components/map/PolygonLayer.vue";
 import MarkerLayer from "@/components/map/MarkerLayer.vue";
+import PolylineLayer from "@/components/map/PolylineLayer.vue";
 </script>
 
 <style scoped>

@@ -2,15 +2,15 @@
   <RegionHeader v-if="currentRegion && territoriesShow"/>
   <Map/>
   <MarkerInfoDrawer/>
-  <LegendCard/>
-  <OptionsCard/>
+  <LegendCard class="overlay-card"/>
+  <OptionsCard class="overlay-card"/>
+  <DistanceCard class="overlay-card" v-if="distance"/>
 </template>
 
 <script lang="ts" setup>
 import {onMounted} from 'vue'
 import {
-  activeGroup,
-  currentRegion,
+  currentRegion, distance,
   getMarkerCeiling,
   getMarkers,
   getMarkerTypes, getRegions,
@@ -21,15 +21,21 @@ import Map from "@/components/map/Map.vue";
 import RegionHeader from "@/components/RegionHeader.vue";
 import OptionsCard from "@/components/OptionsCard.vue";
 import LegendCard from "@/components/LegendCard.vue";
+import DistanceCard from "@/components/DistanceCard.vue";
 
 onMounted(() => {
   getMarkerTypes()
   getTerritories()
   getRegions()
-  activeGroup.value = localStorage.groupCode
   setInterval(() => {
     getMarkers()
     getMarkerCeiling()
   }, 500)
 })
 </script>
+
+<style scoped>
+.overlay-card {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+</style>

@@ -10,7 +10,7 @@ import {
   markerAdded,
   markerCeiling,
   MarkerType,
-  poly,
+  poly, polyLineCenter, polyLineLatLngs,
   regionColors,
   selectedMarker,
   showAlert,
@@ -56,9 +56,10 @@ export function addMarker(event: any) {
 
 // Function to edit an existing marker
 export function editMarker(marker: Marker) {
+  // Set the selected marker to the marker being edited
+  selectedMarker.value = marker
+
   if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
-    // Set the selected marker to the marker being edited
-    selectedMarker.value = marker
     // Open the marker drawer
     drawerOpened.value = true
     // Set the markerAdded flag to true indicating an existing marker is being edited
@@ -79,19 +80,17 @@ export function handleMarkerContextMenu(event: any, marker: Marker) {
     showAlert.value = true
     // Calculate the distance between the selected marker and the clicked marker
     distance.value = getDistance(selectedMarker.value, marker)
-    // Set destination marker
-    destinationMarker.value = marker
-  }
-}
 
-export function getPolylinePoints() {
-  if (selectedMarker.value !== undefined && destinationMarker.value !== undefined) {
-    return [
-      [selectedMarker.value.m_lat, selectedMarker.value.m_lng] as LatLngExpression,
-      [destinationMarker.value.m_lat, destinationMarker.value.m_lng] as LatLngExpression
+    polyLineLatLngs.value = [
+      [selectedMarker.value.m_lat, selectedMarker.value.m_lng],
+      [marker.m_lat, marker.m_lng]
+    ]
+
+    polyLineCenter.value = [
+      (selectedMarker.value.m_lat + marker.m_lat) / 2,
+      (selectedMarker.value.m_lng + marker.m_lng) / 2
     ]
   }
-  return []
 }
 
 // Function to toggle the move mode
@@ -140,4 +139,11 @@ export function updateType(type: MarkerType) {
 export function handlePolygonMouseOver(territory: Territory) {
   currentTerritory.value = territory.t_name
   currentRegion.value = territory.r_name
+}
+
+export function handleKeyDown(event: KeyboardEvent) {
+  console.log(event.key)
+  if (event.key === 'Escape' || event.key === 'Esc') {
+    console.log('ESC key pressed');
+  }
 }

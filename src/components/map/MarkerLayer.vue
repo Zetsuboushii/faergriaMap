@@ -16,6 +16,6 @@
 
 <script setup lang="ts">
 import {markers} from "@/lib/api/mapData"
-import {editMarker, handleMarkerContextMenu} from "@/lib/api/markerHandler"
-import {LIcon, LMarker, LTooltip} from "@vue-leaflet/vue-leaflet"
+import {editMarker, handleMarkerContextMenu} from "@/lib/api/eventHandler"
+import {LIcon, LMarker, LPopup, LTooltip} from "@vue-leaflet/vue-leaflet"
 </script>

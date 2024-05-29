@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import {poly, regionColors, territories, territoriesShow} from "@/lib/api/mapData"
 import {LPolygon} from "@vue-leaflet/vue-leaflet"
-import {handlePolygonMouseOver} from "@/lib/api/markerHandler";
+import {handlePolygonMouseOver} from "@/lib/api/eventHandler";
 </script>
 
 <style scoped>
