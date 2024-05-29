@@ -10,35 +10,48 @@
 
 <p align="center"><br><br><img src="src/assets/map_iconless.png" width="500" height="500"/></p>
 
-## Mitwirkende
-
-| Mitwirkende  | GitHub                                                                                                                                                                                |
-|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Luke Grasser | <a href="https://github.com/zetsuboushii"><img src="https://avatars.githubusercontent.com/u/65507051?v=4" width="150px;" alt=""/><br/>[Zetsuboushii](https://github.com/zetsuboushii) |
+<h2>Table of Contents</h3>
 
 <!-- TOC -->
-  * [Mitwirkende](#mitwirkende)
-  * [Installation](#installation)
-  * [Ausführen der Applikation](#ausführen-der-applikation)
-  * [Dokumentation](#dokumentation)
-    * [1 Einleitung](#1-einleitung)
-      * [1.1 Projektumfeld](#11-projektumfeld)
-      * [1.2 Projektbeschreibung](#12-projektbeschreibung)
-      * [1.3 Projektanforderungen](#13-projektanforderungen)
-    * [2 Planung](#2-planung)
-      * [2.1 Produktbeschreibung](#21-produktbeschreibung)
-      * [2.2 Projektphasen](#22-projektphasen)
-    * [3 Analyse](#3-analyse)
-      * [3.1 Soll-Ist-Analyse](#31-soll-ist-analyse)
-      * [3.2 Fachkonzept](#32-fachkonzept)
-    * [4 Entwurf](#4-entwurf)
-      * [4.1 Zielplattform](#41-zielplattform)
-        * [4.1.1 Technologien](#411-technologien)
-        * [4.1.2 API-Referenz](#412-api-referenz)
-      * [4.2 Benutzeroberfläche](#42-benutzeroberfläche)
+
+* [1. Einleitung](#1-einleitung)
+* [2. Mitwirkende](#2-mitwirkende)
+* [3. Userguide](#3-userguide)
+    * [a. Installation](#a-installation)
+    * [b. Ausführen der Applikation](#b-ausführen-der-applikation)
+    * [c. Nutzung der interaktiven Karte](#c-nutzung-der-interaktiven-karte)
+* [4. Dokumentation](#4-dokumentation)
+    * [a. Verwendete Technologien](#a-verwendete-technologien)
+        * [i. Frontend-Entwicklung](#i-frontend-entwicklung)
+        * [ii. Kartentechnologie](#ii-kartentechnologie)
+        * [iii. Backend-Entwicklung](#iii-backend-entwicklung)
+        * [iv. Datenbank](#iv-datenbank)
+    * [b. Architektur](#b-architektur)
+    * [c. Datenbankmodell](#c-datenbankmodell)
+* [5. Business Case](#5-business-case)
+    * [a. Executive Summary](#a-executive-summary)
+    * [b. Marktanalyse](#b-marktanalyse)
+    * [c. Wettbewerbsanalyse](#c-wettbewerbsanalyse)
+    * [d. Geschäftsmodell](#d-geschäftsmodell)
+    * [e. Marketing- und Vertriebsstrategie](#e-marketing--und-vertriebsstrategie)
+
 <!-- TOC -->
 
-## Installation
+## 1. Einleitung
+
+## 2. Mitwirkende
+
+| Mitwirkende              | GitHub                                                                                                                                                                                 |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Luke Grasser<br/>(Zetsu) | <a href="https://github.com/zetsuboushii"><img src="https://avatars.githubusercontent.com/u/65507051?v=4" width="150px;" alt=""/><br/>[@Zetsuboushii](https://github.com/zetsuboushii) |
+
+## 3. Userguide
+
+Im Folgenden wird das Grundlegende Setup, sowie die Bedienelemente der Anwendung erklärt.
+
+### a. Installation
+
+_Zum Ausführen wird Node.js mit npm benötigt._
 
 Zu Beginn das Projekt klonen und folgende Befehle ausführen:
 
@@ -46,40 +59,147 @@ Zu Beginn das Projekt klonen und folgende Befehle ausführen:
 npm install
 ```
 
-## Ausführen der Applikation
+### b. Ausführen der Applikation
 
 ```bash
 npm run start
 ```
 
-## Dokumentation
+_Die Karte ist während begrenzten Zeitrahmen unter xxx erreichbar._
 
-### 1 Einleitung
+### c. Nutzung der interaktiven Karte
 
-#### 1.1 Projektumfeld
+<div style="text-align: justify">
+Beim Aufruf der Website wird der Nutzer direkt auf der interaktiven Karte begrüßt. Die Bedienung der Karte ist intuitiv
+gestaltet: Mit dem Mausrad kann der Nutzer stufenlos hinein- und herauszoomen, und durch Ziehen mit der gedrückten
+Maustaste lässt sich die Karte navigieren. Die Marker passen sich jeder Zoomstufe dynamisch an, sodass auch Cluster von
+Markern bei höheren Zoomstufen deutlich erkennbar bleiben.
 
-#### 1.2 Projektbeschreibung
+Auf der Karte sind die Regionen farblich markiert. Wenn der Nutzer mit der Maus über eine Region fährt, wird der Name
+der Region am oberen Bildschirmrand angezeigt.
 
-#### 1.3 Projektanforderungen
+Ein Klick auf einen beliebigen Punkt der Karte öffnet auf der rechten Bildschirmseite einen Drawer. Hier kann der Nutzer
+den Namen und das Icon eines Markers festlegen und diesen der Karte hinzufügen. Markierungen können bearbeitet werden,
+sofern der Nutzer die entsprechenden Berechtigungen besitzt. Beim Hovern über einen Marker erscheint dessen Name als
+Tooltip.
 
-### 2 Planung
+Am linken Bildschirmrand befindet sich eine scrollbare Legende, die die Farben der Regionen und deren geopolitische
+Zugehörigkeit anzeigt. Ein ausfahrbares Optionsfenster ermöglicht es, einen Sessioncode einzugeben, um eigene Marker
+hinzuzufügen. Zusätzlich gibt es eine Togglebox, mit der die Anzeige der Regionen ein- oder ausgeschaltet werden kann.
 
-#### 2.1 Produktbeschreibung
+Sessions sind dazu gedacht, dass sich Gruppen, hauptsächlich Spielergruppen, ein eigenes Set an Markern teilen können.
+Vom Dungeon Master festgelegte Marker sind nicht bearbeitbar.
 
-#### 2.2 Projektphasen
+Wenn ein Marker per Linksklick ausgewählt wurde, kann ein zweiter Marker per Rechtsklick angewählt werden, um eine Linie
+zwischen diesen zu ziehen. Am unteren Bildschirmrand wird dann die Distanz zwischen den beiden Markern angezeigt.
+</div>
 
-### 3 Analyse
+## 4. Dokumentation
 
-#### 3.1 Soll-Ist-Analyse
+Im Folgenden wird das Projekt aus technischer Sicht näher beleuchtet.
 
-#### 3.2 Fachkonzept
+### a. Verwendete Technologien
 
-### 4 Entwurf
+Dieses Webprojekt wurde mit einer Vielzahl moderner Technologien realisiert, um eine leistungsfähige und
+benutzerfreundliche Anwendung zu erstellen. Im Folgenden werden die verwendeten Technologien ausführlicher beschrieben:
 
-#### 4.1 Zielplattform
+#### i. Frontend-Entwicklung
 
-##### 4.1.1 Technologien
+**Vue.js mit TypeScript**  
+Für das Frontend wurde das client-side Framework Vue.js verwendet, welches bekannt für seine Reaktivität und Modularität
+ist. Die Entscheidung, Vue.js mit TypeScript zu kombinieren, ermöglicht es, die Vorteile von Typüberprüfung und modernen
+JavaScript-Funktionen zu nutzen, was zu einer stabileren und wartbareren Codebasis führt. TypeScript bietet zudem eine
+verbesserte Entwicklererfahrung durch besseren Code-Editor-Support und frühzeitige Fehlererkennung.
 
-##### 4.1.2 API-Referenz
+**Vuetify**  
+Um die Benutzeroberfläche zu gestalten und konsistente, ästhetisch ansprechende Komponenten zu verwenden, wurde das
+Component Framework Vuetify integriert. Vuetify basiert auf Material Design Richtlinien und bietet eine breite Palette
+an vorgefertigten UI-Komponenten, die leicht anzupassen sind. Dies beschleunigt die Entwicklung und gewährleistet eine
+einheitliche Benutzererfahrung.
 
-#### 4.2 Benutzeroberfläche
+#### ii. Kartentechnologie
+
+**Leaflet und vue-leaflet**  
+Die Kartendarstellung und -interaktion innerhalb der Anwendung wird durch die JavaScript-Bibliothek Leaflet ermöglicht.
+Leaflet ist bekannt für seine Leistungsfähigkeit und Flexibilität im Umgang mit interaktiven Karten. Um Leaflet nahtlos
+in das Vue-Framework zu integrieren, wird das vue-leaflet Package verwendet, das Leaflet-Funktionalitäten in Form von
+Vue-Komponenten zur Verfügung stellt. Dies ermöglicht eine einfache und effiziente Implementierung von Kartenfunktionen
+in der Anwendung.
+
+#### iii. Backend-Entwicklung
+
+**ExpressJS**  
+Der Server wird mit ExpressJS realisiert, einem minimalen und flexiblen Node.js-Web-Application-Framework, das robuste
+Features für Web- und Mobilanwendungen bietet. ExpressJS dient als Middleware-Schicht, die Anfragen verarbeitet, Routing
+durchführt und als Kommunikationsbrücke zwischen dem Frontend und der Datenbank fungiert.
+
+#### iv. Datenbank
+
+**SQLite**  
+Die Datenhaltung wird durch eine SQLite-Datenbank gelöst. SQLite ist eine leichtgewichtige, dateibasierte Datenbank, die
+sich besonders gut für lokale Anwendungen eignet. Sie benötigt keinen separaten Server und ist einfach zu konfigurieren
+und zu verwalten. SQLite bietet dennoch ausreichende Leistungsfähigkeit und Funktionalität für viele Anwendungsfälle,
+insbesondere für kleinere bis mittelgroße Projekte.
+
+### b. Architektur
+
+### c. Datenbankmodell
+
+```mermaid
+erDiagram
+    GROUPS {
+        int g_id
+        text g_code
+    }
+    MARKER_TYPES {
+        int mt_id
+        text mt_name
+        text url
+        int fk_mt_region
+        int mt_size
+    }
+    MARKERS {
+        int m_id
+        text m_name
+        int fk_m_type
+        real m_lat
+        real m_lng
+        text fk_m_group
+    }
+    REGIONS {
+        int r_id
+        text r_name
+        text r_url
+    }
+    TERRITORIES {
+        int t_id
+        text t_name
+        fk_t_region text
+    }
+    TERRITORY_COORDS {
+        int c_id
+        int fk_t_id
+        real c_lat
+        real c_lng
+    }
+
+    MARKERS }o--|| MARKER_TYPES: has
+    MARKERS }o--|| GROUPS: belongs_to
+    MARKER_TYPES }o--|| REGIONS: specified_for
+    TERRITORIES }o--|| REGIONS: lays_in
+    TERRITORY_COORDS }o--|| TERRITORIES: lays_in
+```
+
+## 5. Business Case
+
+### a. Executive Summary
+
+### b. Marktanalyse
+
+### c. Wettbewerbsanalyse
+
+### d. Geschäftsmodell
+
+### e. Marketing- und Vertriebsstrategie
+
+Faergria © Zestu 2024 
