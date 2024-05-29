@@ -13,28 +13,30 @@
 <h2>Table of Contents</h3>
 
 <!-- TOC -->
-
-* [1. Einleitung](#1-einleitung)
-* [2. Mitwirkende](#2-mitwirkende)
-* [3. Userguide](#3-userguide)
+  * [1. Einleitung](#1-einleitung)
+  * [2. Mitwirkende](#2-mitwirkende)
+  * [3. Userguide](#3-userguide)
     * [a. Installation](#a-installation)
     * [b. Ausführen der Applikation](#b-ausführen-der-applikation)
     * [c. Nutzung der interaktiven Karte](#c-nutzung-der-interaktiven-karte)
-* [4. Dokumentation](#4-dokumentation)
+  * [4. Dokumentation](#4-dokumentation)
     * [a. Verwendete Technologien](#a-verwendete-technologien)
-        * [i. Frontend-Entwicklung](#i-frontend-entwicklung)
-        * [ii. Kartentechnologie](#ii-kartentechnologie)
-        * [iii. Backend-Entwicklung](#iii-backend-entwicklung)
-        * [iv. Datenbank](#iv-datenbank)
+      * [i. Frontend-Entwicklung](#i-frontend-entwicklung)
+      * [ii. Kartentechnologie](#ii-kartentechnologie)
+      * [iii. Backend-Entwicklung](#iii-backend-entwicklung)
+      * [iv. Datenbank](#iv-datenbank)
     * [b. Architektur](#b-architektur)
+      * [i. Single Page Application (SPA)](#i-single-page-application-spa)
+      * [ii. Vue.js und Reaktivität](#ii-vuejs-und-reaktivität)
+      * [iii. Backend und Datenbank](#iii-backend-und-datenbank)
+      * [iv. API und Event Handling](#iv-api-und-event-handling)
     * [c. Datenbankmodell](#c-datenbankmodell)
-* [5. Business Case](#5-business-case)
+  * [5. Business Case](#5-business-case)
     * [a. Executive Summary](#a-executive-summary)
     * [b. Marktanalyse](#b-marktanalyse)
     * [c. Wettbewerbsanalyse](#c-wettbewerbsanalyse)
     * [d. Geschäftsmodell](#d-geschäftsmodell)
     * [e. Marketing- und Vertriebsstrategie](#e-marketing--und-vertriebsstrategie)
-
 <!-- TOC -->
 
 ## 1. Einleitung
@@ -47,7 +49,7 @@
 
 ## 3. Userguide
 
-Im Folgenden wird das Grundlegende Setup, sowie die Bedienelemente der Anwendung erklärt.
+Im Folgenden wird das grundlegende Setup, sowie die Bedienelemente der Anwendung erklärt.
 
 ### a. Installation
 
@@ -69,7 +71,6 @@ _Die Karte ist während begrenzten Zeitrahmen unter xxx erreichbar._
 
 ### c. Nutzung der interaktiven Karte
 
-<div style="text-align: justify">
 Beim Aufruf der Website wird der Nutzer direkt auf der interaktiven Karte begrüßt. Die Bedienung der Karte ist intuitiv
 gestaltet: Mit dem Mausrad kann der Nutzer stufenlos hinein- und herauszoomen, und durch Ziehen mit der gedrückten
 Maustaste lässt sich die Karte navigieren. Die Marker passen sich jeder Zoomstufe dynamisch an, sodass auch Cluster von
@@ -92,7 +93,6 @@ Vom Dungeon Master festgelegte Marker sind nicht bearbeitbar.
 
 Wenn ein Marker per Linksklick ausgewählt wurde, kann ein zweiter Marker per Rechtsklick angewählt werden, um eine Linie
 zwischen diesen zu ziehen. Am unteren Bildschirmrand wird dann die Distanz zwischen den beiden Markern angezeigt.
-</div>
 
 ## 4. Dokumentation
 
@@ -143,7 +143,55 @@ insbesondere für kleinere bis mittelgroße Projekte.
 
 ### b. Architektur
 
+Für dieses Projekt wurde die Entscheidung getroffen, eine Single Page Application (SPA) zu entwickeln. Der Hauptgrund
+hierfür ist die einzige statische Ansicht der Karte, auf der dynamisch Elemente ein- und ausgeblendet werden können.
+Eine SPA bietet mehrere Vorteile, insbesondere im Hinblick auf Leistung und Benutzererfahrung. Durch das Laden aller
+erforderlichen Ressourcen auf einmal und das anschließende dynamische Aktualisieren des Inhalts wird die Notwendigkeit
+ständiger Seitenneuladungen eliminiert, was zu einer schnelleren und flüssigeren Interaktion führt.
+
+#### i. Single Page Application (SPA)
+
+Eine SPA lädt initial eine HTML-Seite und aktualisiert den Inhalt dynamisch durch JavaScript, ohne die Seite neu zu
+laden. Dies ermöglicht eine reibungslose und responsive Benutzererfahrung, da nur die notwendigen Teile der Seite
+aktualisiert werden, anstatt den gesamten Inhalt neu zu laden. Dadurch werden die Serverlast und die Ladezeiten
+reduziert, was zu einer verbesserten Performance führt.
+
+#### ii. Vue.js und Reaktivität
+
+Vue.js wurde als Framework gewählt, da es eine kleinteilige Komponentenstruktur ermöglicht. Diese Struktur erlaubt es,
+Frontendelemente in separate, wiederverwendbare Komponenten auszulagern. Zu den Hauptkomponenten gehören:
+
+- **MapView**: Die Hauptansicht, in der die Karte und andere dynamische Vue-Komponenten wie der MarkerInfoDrawer
+  gerendert werden.
+- **MarkerInfoDrawer**: Eine seitlich ein- und ausfahrbare Komponente, die Informationen zu den Markern anzeigt und
+  deren Bearbeitung ermöglicht.
+
+Vue.js ist bekannt für seine Reaktivität. Wenn sich der Zustand der Anwendung ändert, aktualisiert Vue automatisch die
+betroffenen Teile der Benutzeroberfläche. Dies macht die Entwicklung effizienter und die Anwendung reaktionsschneller.
+Reaktive Datenbindungen sorgen dafür, dass Änderungen im Datenmodell sofort im UI reflektiert werden, ohne dass explizit
+DOM-Manipulationen durchgeführt werden müssen.
+
+#### iii. Backend und Datenbank
+
+Die Datenbank, in der unter anderem Informationen über Marker gespeichert werden, wird von einem Server gehostet und auf
+einem spezifischen Port bereitgestellt. Die Datenbank verwendet SQLite, eine leichtgewichtige, dateibasierte
+Datenbanklösung. Der Zugriff auf die Datenbank erfolgt über eine eigens entwickelte API. Diese API stellt dem Frontend
+Funktionen und Variablen zur Verfügung, um Daten aus der Datenbank abzurufen und zu verwenden. Dies ermöglicht eine
+klare Trennung zwischen Frontend und Backend, wodurch die Wartbarkeit und Skalierbarkeit der Anwendung verbessert wird.
+
+#### iv. API und Event Handling
+
+Zusätzlich zur Datenbank-API existiert eine weitere API, die für das Handling von Events, State Changes und Berechnungen
+zuständig ist. Diese API ermöglicht es, auf Benutzerinteraktionen zu reagieren und die Anwendung entsprechend
+anzupassen. Beispiele hierfür sind das Hinzufügen oder Bearbeiten von Markern auf der Karte und das Berechnen von
+Distanzen zwischen Markern. Durch die Verwendung von APIs wird die Modularität und Erweiterbarkeit der Anwendung
+gewährleistet.
+
 ### c. Datenbankmodell
+
+Das Datenbankmodell zeigt die Struktur einer relationalen Datenbank, die für eine Anwendung zur Verwaltung von Markern
+und Regionen auf einer Karte verwendet wird. Die Datenbank besteht aus sechs Tabellen, die durch verschiedene
+Beziehungen miteinander verknüpft sind.
 
 ```mermaid
 erDiagram
@@ -189,6 +237,71 @@ erDiagram
     TERRITORIES }o--|| REGIONS: lays_in
     TERRITORY_COORDS }o--|| TERRITORIES: lays_in
 ```
+
+`GROUPS`
+
+- **Attribute:**
+    - `g_id` (int): Primärschlüssel, der die Gruppe eindeutig identifiziert.
+    - `g_code` (text): Ein Code, der zur Identifizierung der Gruppe verwendet wird.
+- **Beziehungen:**
+    - Eine Gruppe kann mehrere Marker haben (`belongs_to` Beziehung zu MARKERS).
+
+`MARKERS`
+
+- **Attribute:**
+    - `m_id` (int): Primärschlüssel, der den Marker eindeutig identifiziert.
+    - `m_name` (text): Der Name des Markers.
+    - `fk_m_type` (int): Fremdschlüssel, der auf den Typ des Markers verweist (Verbindung zu MARKER_TYPES).
+    - `m_lat` (real): Die geografische Breite des Markers.
+    - `m_lng` (real): Die geografische Länge des Markers.
+    - `fk_m_group` (text): Fremdschlüssel, der auf die Gruppe verweist, zu der der Marker gehört (Verbindung zu GROUPS).
+- **Beziehungen:**
+    - Jeder Marker gehört zu einer Gruppe.
+    - Jeder Marker hat einen Typ (`has` Beziehung zu MARKER_TYPES).
+
+`MARKER_TYPES`
+
+- **Attribute:**
+    - `mt_id` (int): Primärschlüssel, der den Markertyp eindeutig identifiziert.
+    - `mt_name` (text): Der Name des Markertyps.
+    - `url` (text): Eine URL, die möglicherweise ein Icon oder Bild für den Markertyp enthält.
+    - `fk_mt_region` (int): Fremdschlüssel, der auf die Region verweist, zu der der Markertyp gehört (Verbindung zu
+      REGIONS).
+    - `mt_size` (int): Die Größe des Markertyps.
+- **Beziehungen:**
+    - Jeder Markertyp ist für eine Region spezifiziert (`specified_for` Beziehung zu REGIONS).
+
+`REGIONS`
+
+- **Attribute:**
+    - `r_id` (int): Primärschlüssel, der die Region eindeutig identifiziert.
+    - `r_name` (text): Der Name der Region.
+    - `r_url` (text): Eine URL, die möglicherweise ein Bild oder eine weitere Information zur Region enthält.
+- **Beziehungen:**
+    - Eine Region kann mehrere Markertypen haben.
+    - Eine Region kann mehrere Territorien haben (`lays_in` Beziehung zu TERRITORIES).
+
+`TERRITORIES`
+
+- **Attribute:**
+    - `t_id` (int): Primärschlüssel, der das Territorium eindeutig identifiziert.
+    - `t_name` (text): Der Name des Territoriums.
+    - `fk_t_region` (int): Fremdschlüssel, der auf die Region verweist, zu der das Territorium gehört (Verbindung zu
+      REGIONS).
+- **Beziehungen:**
+    - Ein Territorium gehört zu einer Region.
+    - Ein Territorium kann mehrere Koordinaten haben (`lays_in` Beziehung zu TERRITORY_COORDS).
+
+`TERRITORY_COORDS`
+
+- **Attribute:**
+    - `c_id` (int): Primärschlüssel, der die Koordinate eindeutig identifiziert.
+    - `fk_t_id` (int): Fremdschlüssel, der auf das Territorium verweist, zu dem die Koordinate gehört (Verbindung zu
+      TERRITORIES).
+    - `c_lat` (real): Die geografische Breite der Koordinate.
+    - `c_lng` (real): Die geografische Länge der Koordinate.
+- **Beziehungen:**
+    - Eine Koordinate gehört zu einem Territorium.
 
 ## 5. Business Case
 
