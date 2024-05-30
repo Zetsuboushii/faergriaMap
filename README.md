@@ -74,7 +74,7 @@ npm install
 npm run start
 ```
 
-_Die Karte ist gelegentliczh unter [](http://faergriamap.zetsuboushii.site/) erreichbar._
+_Die Karte ist gelegentlich unter [faergriamap.zetsuboushii.site](http://faergriamap.zetsuboushii.site/) erreichbar._
 
 ### c. Nutzung der interaktiven Karte
 
