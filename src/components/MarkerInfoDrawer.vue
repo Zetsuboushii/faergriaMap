@@ -67,9 +67,13 @@ import {closeMarker, toggleMoveMode, updateType} from "@/lib/api/eventHandler"
   width: 10%;
   min-width: 300px;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 0.75);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 9999;
+  background: rgba( 255, 255, 255, 0.4 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 4px );
+  -webkit-backdrop-filter: blur( 4px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
 }
 
 .marker-icon-grid {
