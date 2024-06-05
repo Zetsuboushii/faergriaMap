@@ -13,30 +13,32 @@
 <h2>Table of Contents</h3>
 
 <!-- TOC -->
-  * [1. Einleitung](#1-einleitung)
-  * [2. Mitwirkende](#2-mitwirkende)
-  * [3. Userguide](#3-userguide)
+
+* [1. Einleitung](#1-einleitung)
+* [2. Mitwirkende](#2-mitwirkende)
+* [3. Userguide](#3-userguide)
     * [a. Installation](#a-installation)
     * [b. Ausführen der Applikation](#b-ausführen-der-applikation)
     * [c. Nutzung der interaktiven Karte](#c-nutzung-der-interaktiven-karte)
-  * [4. Dokumentation](#4-dokumentation)
+* [4. Dokumentation](#4-dokumentation)
     * [a. Verwendete Technologien](#a-verwendete-technologien)
-      * [i. Frontend-Entwicklung](#i-frontend-entwicklung)
-      * [ii. Kartentechnologie](#ii-kartentechnologie)
-      * [iii. Backend-Entwicklung](#iii-backend-entwicklung)
-      * [iv. Datenbank](#iv-datenbank)
+        * [i. Frontend-Entwicklung](#i-frontend-entwicklung)
+        * [ii. Kartentechnologie](#ii-kartentechnologie)
+        * [iii. Backend-Entwicklung](#iii-backend-entwicklung)
+        * [iv. Datenbank](#iv-datenbank)
     * [b. Architektur](#b-architektur)
-      * [i. Single Page Application (SPA)](#i-single-page-application-spa)
-      * [ii. Vue.js und Reaktivität](#ii-vuejs-und-reaktivität)
-      * [iii. Backend und Datenbank](#iii-backend-und-datenbank)
-      * [iv. API und Event Handling](#iv-api-und-event-handling)
+        * [i. Single Page Application (SPA)](#i-single-page-application-spa)
+        * [ii. Vue.js und Reaktivität](#ii-vuejs-und-reaktivität)
+        * [iii. Backend und Datenbank](#iii-backend-und-datenbank)
+        * [iv. API und Event Handling](#iv-api-und-event-handling)
     * [c. Datenbankmodell](#c-datenbankmodell)
-  * [5. Business Case](#5-business-case)
+* [5. Business Case](#5-business-case)
     * [a. Executive Summary](#a-executive-summary)
     * [b. Marktanalyse](#b-marktanalyse)
     * [c. Wettbewerbsanalyse](#c-wettbewerbsanalyse)
     * [d. Geschäftsmodell](#d-geschäftsmodell)
     * [e. Marketing- und Vertriebsstrategie](#e-marketing--und-vertriebsstrategie)
+
 <!-- TOC -->
 
 ## 1. Einleitung
@@ -74,7 +76,7 @@ npm install
 npm run start
 ```
 
-_Die Karte ist während begrenzten Zeitrahmen unter xxx erreichbar._
+_Die Karte ist während begrenzten Zeitrahmen unter http://faergriamap.zetsuboushii.site erreichbar._
 
 ### c. Nutzung der interaktiven Karte
 
