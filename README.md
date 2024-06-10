@@ -1,14 +1,14 @@
-<p align="center"><br><br><img src="src/assets/markers/marker_town_thaugrien.png" width="300" height="300" /></p>
+<p align="center"><br><br><img src="src/assets/markers/marker_town_thaugrien.png" width="260" height="260"  alt=""/></p>
 
 <h2 align="center">Faergria Interactive Map</h2>
 <p align="center"><strong><code>faergriaMap</code></strong></p>
 <p align="center">Eine interaktive Karte begleitend für eine Tabletop RPG Kampgne auf dem fiktiven Kontinent Faergria</p>
 <br>
 <p align="center">
-  <img src="https://img.shields.io/maintenance/yes/2024" />
+  <img src="https://img.shields.io/maintenance/yes/2024"  alt=""/>
 </p>
 
-<p align="center"><br><br><img src="src/assets/map_iconless.png" width="500" height="500"/></p>
+<p align="center"><br><br><img src="src/assets/map_iconless.png" width="500" height="500" alt=""/></p>
 
 <h2>Table of Contents</h3>
 
