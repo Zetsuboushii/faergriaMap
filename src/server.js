@@ -7,7 +7,7 @@ const PORT = 1338
 app.use(cors())
 app.use(express.json())
 
-const db = new sqlite3.Database('./src/db.sqlite', sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database('./src/faergria.sqlite', sqlite3.OPEN_READWRITE, (err) => {
   if (err) return console.error(err.message)
   console.log('Verbunden mit der SQLite-Datenbank.')
 })
