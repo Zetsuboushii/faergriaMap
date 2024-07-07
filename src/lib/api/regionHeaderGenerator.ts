@@ -80,5 +80,11 @@ export function createRegionSvg(caption: any): string {
     .attr('stroke-width', 2)
     .attr('fill', 'none');
 
-  return `data:image/svg+xml;base64,${btoa(svg.node()?.outerHTML || '')}`;
+  const xmlSerializer = new XMLSerializer();
+  const svgString = xmlSerializer.serializeToString(svg.node()!);
+  const encodedSvg = encodeURIComponent(svgString)
+    .replace(/'/g, '%27')
+    .replace(/"/g, '%22');
+
+  return `data:image/svg+xml,${encodedSvg}`;
 }

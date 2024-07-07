@@ -39,4 +39,3 @@ watch(() => currentTerritory.value, (newTerritory) => {
   margin: 0 auto;
 }
 </style>
-
