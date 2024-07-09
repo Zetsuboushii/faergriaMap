@@ -17,7 +17,7 @@
         :url="currentChart.c_image.imageUrl"
         :bounds="currentChart.c_image.imageBounds"
       ></l-image-overlay>
-      <PolygonLayer/>
+      <PolygonLayer v-if="currentChart.c_id == 1"/>
       <PolylineLayer v-if="distance"/>
       <MarkerLayer/>
     </l-map>

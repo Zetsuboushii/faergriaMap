@@ -2,7 +2,7 @@
   <RegionHeader v-if="currentRegion && territoriesShow"/>
   <Map/>
   <MarkerInfoDrawer/>
-  <LegendCard class="overlay-card"/>
+  <LegendCard v-if="currentChart?.c_id == 1" class="overlay-card"/>
   <OptionsCard class="overlay-card"/>
   <DistanceCard class="overlay-card" v-if="distance"/>
 </template>
@@ -10,14 +10,16 @@
 <script lang="ts" setup>
 import {onMounted} from 'vue'
 import {
-  changeChart,
-  charts,
   currentChart,
-  currentRegion, distance, getCharts,
+  currentRegion,
+  distance,
+  getCharts,
   getMarkerCeiling,
   getMarkers,
-  getMarkerTypes, getRegions,
-  getTerritories, initialChartName, territoriesShow
+  getMarkerTypes,
+  getRegions,
+  getTerritories,
+  territoriesShow
 } from "@/lib/api/mapData"
 import MarkerInfoDrawer from "@/components/MarkerInfoDrawer.vue"
 import Map from "@/components/map/Map.vue";

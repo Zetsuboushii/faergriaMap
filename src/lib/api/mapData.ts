@@ -85,6 +85,7 @@ export interface Marker {
   r_name: string
   fk_m_group: string
   m_type: MarkerType
+  fk_m_chart: number
 }
 
 export interface MarkerType {
@@ -162,6 +163,7 @@ export function updateChartMeta(chart: Chart | undefined) {
       imageUrl: "src/assets/maps/" + chart.c_url + ".png",
       imageBounds: chart.c_bounds.maxBounds as LatLngBoundsExpression,
     }
+    console.log("changed")
   }
 }
 
@@ -180,6 +182,7 @@ export async function getMarkers() {
       r_url: marker.r_url,
       r_name: marker.r_name,
       fk_m_group: marker.fk_m_group,
+      fk_m_chart: marker.fk_m_chart,
       m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
   } catch (error) {
@@ -304,7 +307,8 @@ export async function putMarker(marker: Marker) {
     fk_m_type: marker.m_type.mt_id,
     m_lat: marker.m_lat,
     m_lng: marker.m_lng,
-    fk_m_group: marker.fk_m_group
+    fk_m_group: marker.fk_m_group,
+    fk_m_chart: marker.fk_m_chart
   }
 
   try {
