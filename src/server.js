@@ -12,6 +12,20 @@ const db = new sqlite3.Database('./src/faergria.sqlite', sqlite3.OPEN_READWRITE,
   console.log('Verbunden mit der SQLite-Datenbank.')
 })
 
+app.get('/charts', (req, res) => {
+  const sql = 'select * from charts'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
+})
+
 app.get('/markers', (req, res) => {
   const sql = 'select * from markers m join marker_types mt on m.fk_m_type = mt.mt_id join regions r on r.r_id = mt.fk_mt_region join groups g on m.fk_m_group = g.g_code order by mt.mt_name desc'
   db.all(sql, [], (err, rows) => {

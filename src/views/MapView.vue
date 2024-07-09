@@ -10,11 +10,14 @@
 <script lang="ts" setup>
 import {onMounted} from 'vue'
 import {
-  currentRegion, distance,
+  changeChart,
+  charts,
+  currentChart,
+  currentRegion, distance, getCharts,
   getMarkerCeiling,
   getMarkers,
   getMarkerTypes, getRegions,
-  getTerritories, territoriesShow
+  getTerritories, initialChartName, territoriesShow
 } from "@/lib/api/mapData"
 import MarkerInfoDrawer from "@/components/MarkerInfoDrawer.vue"
 import Map from "@/components/map/Map.vue";
@@ -24,6 +27,7 @@ import LegendCard from "@/components/LegendCard.vue";
 import DistanceCard from "@/components/DistanceCard.vue";
 
 onMounted(() => {
+  getCharts()
   getMarkerTypes()
   getTerritories()
   getRegions()

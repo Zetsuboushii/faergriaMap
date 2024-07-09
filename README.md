@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/maintenance/yes/2024"  alt=""/>
 </p>
 
-<p align="center"><br><br><img src="src/assets/map_iconless.png" width="500" height="500" alt=""/></p>
+<p align="center"><br><br><img src="src/assets/maps/faergria.png" width="500" height="500" alt=""/></p>
 
 <h2>Table of Contents</h3>
 

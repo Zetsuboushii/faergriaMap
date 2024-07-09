@@ -5,12 +5,14 @@ import axios from "axios"
 // Set the API URL based on the environment (development or production)
 export const API_URL = import.meta.env.DEV ? "http://localhost:1338" : ""
 
-export const map = {
-  // Define the Coordinate Reference System (CRS) as Simple for Leaflet
-  crs: CRS.Simple,
-  // Define the initial center point of the map and bind it to a reactive reference
-  center: [689.66, 689.66] as PointExpression
-}
+export const initialChartName = "Königreich Faergria"
+
+//export const map= {
+//  // Define the Coordinate Reference System (CRS) as Simple for Leaflet
+//  crs: CRS.Simple,
+//  // Define the initial center point of the map and bind it to a reactive reference
+//  center: [0, 0] as PointExpression
+//}
 
 export const zoom = {
   // Define the initial zoom level of the map and bind it to a reactive reference
@@ -20,19 +22,19 @@ export const zoom = {
   maxZoom: 4
 }
 
-export const bounds = {
-  // Define the bounds of the map and bind it to a reactive reference
-  maxBounds: [[0, 0], [1379.32, 1379.32]],
-  // Define the viscosity of the map bounds
-  maxBoundsViscosity: 1.0
-}
-
-export const image = {
-  // Define the URL of the image to be used as the map overlay
-  imageUrl: "src/assets/map_iconless.png",
-  // Define the bounds of the image overlay and bind it to a reactive reference
-  imageBounds: [[0, 0], [1379.32, 1379.32]] as LatLngBoundsExpression,
-}
+//export const bounds = {
+//  // Define the bounds of the map and bind it to a reactive reference
+//  maxBounds: [[0, 0], [0, 0]],
+//  // Define the viscosity of the map bounds
+//  maxBoundsViscosity: 1.0
+//}
+//
+//export const image = {
+//  // Define the URL of the image to be used as the map overlay
+//  imageUrl: "src/assets/maps/faergria.png",
+//  // Define the bounds of the image overlay and bind it to a reactive reference
+//  imageBounds: bounds.maxBounds as LatLngBoundsExpression,
+//}
 
 export const poly = {
   opacity: [0, 1],
@@ -50,6 +52,26 @@ export const regionColors: { [key: number]: string } = {
   8: "#ffd700",
   9: "#c62b2b",
   10: "#9b3e22"
+}
+
+export interface Chart {
+  c_id: number,
+  c_name: string,
+  c_url: string,
+  c_lat: number,
+  c_lng: number,
+  c_map: {
+    crs: CRS,
+    center: PointExpression
+  },
+  c_bounds: {
+    maxBounds: [[number, number], [number, number]]
+    maxBoundsViscosity: number
+  },
+  c_image: {
+    imageUrl: string,
+    imageBounds: LatLngBoundsExpression
+  }
 }
 
 // Define interfaces for the data models
@@ -93,6 +115,7 @@ export interface Region {
 }
 
 // Create reactive arrays for storing markers, marker types, and territories
+export const charts = ref<Chart[]>([])
 export const markers = ref<Marker[]>([])
 export const markerTypes = ref<MarkerType[]>([])
 export const territories = ref<Territory[]>([])
@@ -100,6 +123,7 @@ export const groups = ref<string[]>([])
 export const regions = ref<Region[]>([])
 
 // Create reactive variables for dynamic values
+export const currentChart = ref<Chart>()
 export const selectedMarker = ref<Marker>()
 export const destinationMarker = ref<Marker>()
 export const currentTerritory = ref<string>()
@@ -107,7 +131,7 @@ export const distance = ref<number>(0)
 export const markerCeiling = ref()
 export const activeGroup = ref<string>("#00000")
 export const currentRegion = ref<string>()
-export const polyLineLatLngs = ref<LatLngExpression[]>([[100,100],[200,200]])
+export const polyLineLatLngs = ref<LatLngExpression[]>([[100, 100], [200, 200]])
 export const polyLineCenter = ref<LatLngExpression>()
 
 // Create reactive flags for various states
@@ -117,6 +141,29 @@ export const showAlert = ref<boolean>(false)
 export const territoriesShow = ref<boolean>(true)
 export const isMoveMode = ref<boolean>(false)
 export const showOptions = ref<boolean>(false)
+
+export async function changeChart(name: string) {
+  currentChart.value = charts.value.find(chart => chart.c_name === name)
+  console.log(currentChart.value)
+  updateChartMeta(currentChart.value)
+}
+
+export function updateChartMeta(chart: Chart | undefined) {
+  if (chart !== undefined) {
+    chart.c_map = {
+      crs: CRS.Simple,
+      center: [chart.c_lat / 2, chart.c_lng / 2] as PointExpression
+    }
+    chart.c_bounds = {
+      maxBounds: [[0, 0], [chart.c_lat, chart.c_lng]],
+      maxBoundsViscosity: 1.0
+    }
+    chart.c_image = {
+      imageUrl: "src/assets/maps/" + chart.c_url + ".png",
+      imageBounds: chart.c_bounds.maxBounds as LatLngBoundsExpression,
+    }
+  }
+}
 
 // Function to fetch markers from the API and update the markers array
 export async function getMarkers() {
@@ -135,6 +182,24 @@ export async function getMarkers() {
       fk_m_group: marker.fk_m_group,
       m_type: markerTypes.value.find((type) => marker.fk_m_type === type.mt_id)
     }))
+  } catch (error) {
+    console.error("An error occurred: ", error)
+  }
+}
+
+// Function to fetch marker types from the API and update the markerTypes array
+export async function getCharts() {
+  try {
+    const response = await fetch(API_URL + '/charts')
+    const data = await response.json()
+    charts.value = data.data.map((chart: Chart) => ({
+      c_id: chart.c_id,
+      c_name: chart.c_name,
+      c_url: chart.c_url,
+      c_lat: chart.c_lat,
+      c_lng: chart.c_lng,
+    }))
+    await changeChart(initialChartName)
   } catch (error) {
     console.error("An error occurred: ", error)
   }
