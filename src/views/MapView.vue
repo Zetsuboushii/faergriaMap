@@ -1,5 +1,5 @@
 <template>
-  <RegionHeader v-if="currentRegion && territoriesShow"/>
+  <RegionHeader v-if="currentRegion && territoriesShow && currentChart?.c_id == 1"/>
   <Map/>
   <MarkerInfoDrawer/>
   <LegendCard v-if="currentChart?.c_id == 1" class="overlay-card"/>

@@ -1,6 +1,7 @@
 import {
   activeGroup,
   changeChart,
+  charts,
   currentChart,
   currentRegion,
   currentTerritory,
@@ -59,15 +60,14 @@ export function editMarker(marker: Marker) {
   // Set the selected marker to the marker being edited
   selectedMarker.value = marker
 
-  if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
+  if (charts.value.some(chart => chart.c_name === marker.m_name)) {
+    changeChart(marker.m_name).then(r => {
+    })
+  } else if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
     // Open the marker drawer
     drawerOpened.value = true
     // Set the markerAdded flag to true indicating an existing marker is being edited
     markerAdded.value = true
-  } else if ([3, 4].includes(marker.m_type.mt_id)) {
-    console.log("knecht")
-    changeChart(marker.m_name).then(r => {
-    })
   }
 }
 
