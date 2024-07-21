@@ -9,13 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { createRegionSvg } from "@/lib/api/regionHeaderGenerator";
-import { currentTerritory } from "@/lib/api/mapData";
+import {ref, watch} from "vue";
+import {createRegionSvg} from "@/lib/api/regionHeaderGenerator";
+import {currentTerritory} from "@/lib/api/mapData";
 
-const regionSvg = computed(() => {
-  return createRegionSvg(currentTerritory.value);
-});
+const regionSvg = ref(createRegionSvg(currentTerritory.value))
 
 // Optionally, if currentTerritory is reactive and changes dynamically, use a watcher
 watch(() => currentTerritory.value, (newTerritory) => {
