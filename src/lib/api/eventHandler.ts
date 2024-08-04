@@ -1,8 +1,10 @@
 import {
   activeGroup,
+  changeChart,
+  charts,
+  currentChart,
   currentRegion,
   currentTerritory,
-  destinationMarker,
   distance,
   drawerOpened,
   isMoveMode,
@@ -10,19 +12,18 @@ import {
   markerAdded,
   markerCeiling,
   MarkerType,
-  poly, polyLineCenter, polyLineLatLngs,
-  regionColors,
+  polyLineCenter,
+  polyLineLatLngs,
+  putMarker,
   selectedMarker,
   showAlert,
-  territoriesShow,
   Territory,
   updateMarker
 } from "@/lib/api/mapData"
-import {LatLngExpression} from "leaflet";
 
 // Function to add a new marker to the map
 export function addMarker(event: any) {
-  if (activeGroup.value.includes('#') && activeGroup.value.length === 6) {
+  if (activeGroup.value.includes('#') && activeGroup.value.length === 6 && currentChart.value != undefined) {
     // Extract the latitude and longitude from the event
     const latLng = event.latlng
 
@@ -42,7 +43,8 @@ export function addMarker(event: any) {
         mt_url: "poi", // URL for marker type
         r_url: "faergria", // Region ID for marker type
         mt_size: 40 // Size of the marker
-      }
+      },
+      fk_m_chart: currentChart.value.c_id
     }
 
     // Open the marker drawer
@@ -50,7 +52,7 @@ export function addMarker(event: any) {
     // Set the markerAdded flag to false indicating a new marker is being added
     markerAdded.value = false
     // Add the new marker to the database; Dev-only function
-    // putMarker(selectedMarker.value)
+    putMarker(selectedMarker.value)
   }
 }
 
@@ -59,7 +61,10 @@ export function editMarker(marker: Marker) {
   // Set the selected marker to the marker being edited
   selectedMarker.value = marker
 
-  if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
+  if (charts.value.some(chart => chart.c_name === marker.m_name)) {
+    changeChart(marker.m_name).then(r => {
+    })
+  } else if (activeGroup.value !== undefined && marker.fk_m_group === activeGroup.value) {
     // Open the marker drawer
     drawerOpened.value = true
     // Set the markerAdded flag to true indicating an existing marker is being edited

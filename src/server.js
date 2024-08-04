@@ -7,9 +7,23 @@ const PORT = 1338
 app.use(cors())
 app.use(express.json())
 
-const db = new sqlite3.Database('./src/db.sqlite', sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database('./src/faergria.sqlite', sqlite3.OPEN_READWRITE, (err) => {
   if (err) return console.error(err.message)
   console.log('Verbunden mit der SQLite-Datenbank.')
+})
+
+app.get('/charts', (req, res) => {
+  const sql = 'select * from charts'
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(400).json({error: err.message})
+      return
+    }
+    res.json({
+      message: 'Erfolg',
+      data: rows
+    })
+  })
 })
 
 app.get('/markers', (req, res) => {
@@ -115,11 +129,11 @@ app.post('/put-marker', (req, res) => {
   const markerData = req.body
 
   const sql = `
-    insert into markers (m_name, fk_m_type, m_lat, m_lng, fk_m_group)
-    values (?, ?, ?, ?, ?);
+    insert into markers (m_name, fk_m_type, m_lat, m_lng, fk_m_group, fk_m_chart)
+    values (?, ?, ?, ?, ?, ?);
   `
 
-  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng, markerData.fk_m_group]
+  const values = [markerData.m_name, markerData.fk_m_type, markerData.m_lat, markerData.m_lng, markerData.fk_m_group, markerData.fk_m_chart]
 
   db.run(sql, values, function (err) {
     if (err) {

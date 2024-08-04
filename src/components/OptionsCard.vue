@@ -16,13 +16,14 @@
           label="Show Regions"
           class="region-checker"
         ></v-checkbox>
+        <v-btn v-if="currentChart?.c_id != 1" @click="changeChart('Königreich Faergria')">Return to Faergria</v-btn>
       </div>
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import {activeGroup, setGroupStorage, showOptions, territoriesShow} from "@/lib/api/mapData";
+import {activeGroup, changeChart, currentChart, setGroupStorage, showOptions, territoriesShow} from "@/lib/api/mapData";
 </script>
 
 <style>

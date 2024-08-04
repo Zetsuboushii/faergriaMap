@@ -2,15 +2,23 @@
   <div class="region-header">
     <v-row class="fill-height" align="center">
       <v-col>
-        <span class="region-header-text text-h4">{{ currentTerritory }}</span>
+        <img :src="regionSvg" alt="Region Header" class="region-header-svg" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import {currentRegion, currentTerritory, territoriesShow} from "@/lib/api/mapData"
-import {watch} from "vue";
+import {ref, watch} from "vue";
+import {createRegionSvg} from "@/lib/api/regionHeaderGenerator";
+import {currentTerritory} from "@/lib/api/mapData";
+
+const regionSvg = ref(createRegionSvg(currentTerritory.value))
+
+// Optionally, if currentTerritory is reactive and changes dynamically, use a watcher
+watch(() => currentTerritory.value, (newTerritory) => {
+  regionSvg.value = createRegionSvg(newTerritory);
+});
 </script>
 
 <style scoped>
@@ -24,13 +32,8 @@ import {watch} from "vue";
   text-align: center;
 }
 
-.region-header-text {
-  font-weight: bold;
-  font-family: serif;
-  color: white;
-  position: relative;
-  text-decoration: underline;
-  text-decoration-color: white;
-  text-shadow: 1px 1px 2px black;
+.region-header-svg {
+  display: block;
+  margin: 0 auto;
 }
 </style>

@@ -1,23 +1,23 @@
 <template>
   <div class="map-container">
-    <l-map
+    <l-map v-if="currentChart !== undefined"
       ref="mapRef"
       :useGlobalLeaflet="false"
-      :crs="map.crs"
+      :crs="currentChart.c_map.crs"
       :minZoom="zoom.minZoom"
       :maxZoom="zoom.maxZoom"
       :zoom="zoom.zoom"
-      :maxBounds="bounds.maxBounds"
-      :maxBoundsViscosity="bounds.maxBoundsViscosity"
-      :center="map.center"
+      :maxBounds="currentChart.c_bounds.maxBounds"
+      :maxBoundsViscosity="currentChart.c_bounds.maxBoundsViscosity"
+      :center="currentChart.c_map.center"
       @click="handleMapClick"
       @keydown="handleKeyDown"
     >
       <l-image-overlay
-        :url="image.imageUrl"
-        :bounds="image.imageBounds"
+        :url="currentChart.c_image.imageUrl"
+        :bounds="currentChart.c_image.imageBounds"
       ></l-image-overlay>
-      <PolygonLayer/>
+      <PolygonLayer v-if="currentChart.c_id == 1"/>
       <PolylineLayer v-if="distance"/>
       <MarkerLayer/>
     </l-map>
@@ -25,9 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import {bounds, distance, image, map, zoom} from "@/lib/api/mapData";
+import {currentChart, distance, zoom} from "@/lib/api/mapData";
 import {handleKeyDown, handleMapClick} from "@/lib/api/eventHandler";
-import { LImageOverlay, LMap } from "@vue-leaflet/vue-leaflet";
+import {LImageOverlay, LMap} from "@vue-leaflet/vue-leaflet";
 import PolygonLayer from "@/components/map/PolygonLayer.vue";
 import MarkerLayer from "@/components/map/MarkerLayer.vue";
 import PolylineLayer from "@/components/map/PolylineLayer.vue";
